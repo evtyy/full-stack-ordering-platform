@@ -25,7 +25,7 @@ import java.util.Map;
  */
 @RestController
 @RequestMapping("/admin/employee")
-@Api(tags = "员工管理")
+@Api(tags = "Employee Management")
 @Slf4j
 public class EmployeeController {
 
@@ -41,7 +41,7 @@ public class EmployeeController {
      * @return
      */
     @PostMapping("/login")
-    @ApiOperation("员工登录")
+    @ApiOperation("Employee login")
     public Result<EmployeeLoginVO> login(@RequestBody EmployeeLoginDTO employeeLoginDTO) {
         log.info("员工登录：{}", employeeLoginDTO);
 
@@ -65,10 +65,17 @@ public class EmployeeController {
         return Result.success(employeeLoginVO);
     }
 
+    /**
+     * New Employee
+     * @param employeeDTO
+     * @return
+     */
     @PostMapping
-    @ApiOperation(value = "新增员工")
+    @ApiOperation(value = "New Employee")
     public Result save(@RequestBody EmployeeDTO employeeDTO) {
-        log.info("新增员工{}", employeeDTO);
+        log.info("新增员工: {}", employeeDTO);
+        System.out.println("当前线程的id："+ Thread.currentThread().getId());
+
         employeeService.save(employeeDTO);
         return Result.success();
     }
@@ -111,9 +118,10 @@ public class EmployeeController {
      * @return
      */
     @PostMapping("/logout")
-    @ApiOperation(value = "员工退出")
+    @ApiOperation(value = "Employee logout")
     public Result<String> logout() {
         return Result.success();
     }
+
 
 }

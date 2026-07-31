@@ -27,14 +27,24 @@ public class GlobalExceptionHandler {
         return Result.error(ex.getMessage());
     }
 
+    /**
+     * Handles SQL exception
+     * @param ex
+     * @return
+     */
     @ExceptionHandler
     public Result exceptionHandler(SQLIntegrityConstraintViolationException ex) {
+        // example exception msg if input zhangsan again:
+        // Duplicate entry 'zhangsan' for key 'employee.idx_username
         if (ex.getMessage().contains("Duplicate entry")) {
             String[] split = ex.getMessage().split(" ");
-            String msg = split[2] + MessageConstant.ALREADY_EXISTS;
+            // zhangsan should be after 2nd " "
+            // split is a list of Strings, split[index = 2]
+            String msg = split[2] + MessageConstant.ALREADY_EXISTS; // zhangsan 账号已存在
             return Result.error(msg);
+        } else {
+            return Result.error(MessageConstant.UNKNOWN_ERROR);
         }
-        return Result.error(MessageConstant.UNKNOWN_ERROR);
     }
 
 }

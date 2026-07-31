@@ -51,8 +51,9 @@ public class EmployeeServiceImpl implements EmployeeService {
         }
 
         //密码比对
-        String md5 = DigestUtils.md5DigestAsHex(password.getBytes());
-        if (!md5.equals(employee.getPassword())) {
+        //对前端传递过来的明文密码进行md5加密处理
+        password = DigestUtils.md5DigestAsHex(password.getBytes());
+        if (!password.equals(employee.getPassword())) {
             //密码错误
             throw new PasswordErrorException(MessageConstant.PASSWORD_ERROR);
         }
@@ -66,25 +67,28 @@ public class EmployeeServiceImpl implements EmployeeService {
         return employee;
     }
 
-    @Override
+    /**
+     * New Employee
+     * @param employeeDTO
+     */
     public void save(EmployeeDTO employeeDTO) {
         Employee employee = new Employee();
 
-        // 对象属性拷贝
+        // copy matching fields from DTO to Entity
         BeanUtils.copyProperties(employeeDTO, employee);
 
-        // 设置账号状态
+        // set account status, default 1 = normal, 0 = locked
         employee.setStatus(StatusConstant.ENABLE);
 
-        // 设置密码
+        // set password, default password: MD5 version of 123456
         employee.setPassword(DigestUtils.md5DigestAsHex(PasswordConstant.DEFAULT_PASSWORD.getBytes()));
 
-        // 设置创建时间和修改时间
+        // set creation and update time
         LocalDateTime now = LocalDateTime.now();
         employee.setCreateTime(now);
         employee.setUpdateTime(now);
 
-        // 记录创建人和修改人ID
+        // note creator ID and editor ID
         Long id = BaseContext.getCurrentId();
         employee.setCreateUser(id);
         employee.setUpdateUser(id);
