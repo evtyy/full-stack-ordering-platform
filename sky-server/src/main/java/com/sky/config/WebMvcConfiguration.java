@@ -22,7 +22,9 @@ import springfox.documentation.spring.web.plugins.Docket;
 import java.util.List;
 
 /**
- * 配置类，注册web层相关组件
+ * Web MVC configuration class
+ * Registers web-related components such as interceptors,
+ * static resource handlers, message converters, and API documentation.
  */
 @Configuration
 @Slf4j
@@ -35,12 +37,12 @@ public class WebMvcConfiguration extends WebMvcConfigurationSupport {
     private JwtTokenUserInterceptor jwtTokenUserInterceptor;
 
     /**
-     * 注册自定义拦截器
+     * Registers custom interceptors for admin and user requests.
      *
      * @param registry
      */
     protected void addInterceptors(InterceptorRegistry registry) {
-        log.info("开始注册自定义拦截器...");
+        log.info("Registering custom interceptors...");
         registry.addInterceptor(jwtTokenAdminInterceptor)
                 .addPathPatterns("/admin/**")
                 .excludePathPatterns("/admin/employee/login");
@@ -52,12 +54,13 @@ public class WebMvcConfiguration extends WebMvcConfigurationSupport {
     }
 
     /**
-     * 通过knife4j生成接口文档
-     * @return
+     * Configures Swagger/Knife4j documentation for admin APIs.
+     *
+     * @return Swagger Docket
      */
     @Bean
     public Docket docket() {
-        log.info("准备生成接口文档...");
+        log.info("Generating API documentation...");
         ApiInfo apiInfo = new ApiInfoBuilder()
                 .title("Takeout API Documentation")
                 .version("1.0")
@@ -73,6 +76,11 @@ public class WebMvcConfiguration extends WebMvcConfigurationSupport {
         return docket;
     }
 
+    /**
+     * Configures Swagger/Knife4j documentation for user APIs.
+     *
+     * @return Swagger Docket
+     */
     @Bean
     public Docket docket1() {
         ApiInfo apiInfo = new ApiInfoBuilder()
@@ -92,25 +100,28 @@ public class WebMvcConfiguration extends WebMvcConfigurationSupport {
     }
 
     /**
-     * 设置静态资源映射
+     * Configures mappings for static resources,
+     * like Swagger/Knife4j documentation page.
+     *
      * @param registry
      */
     protected void addResourceHandlers(ResourceHandlerRegistry registry) {
-        log.info("开始设置静态资源映射...");
+        log.info("Configuring static resource handlers...");
         registry.addResourceHandler("/doc.html").addResourceLocations("classpath:/META-INF/resources/");
         registry.addResourceHandler("/webjars/**").addResourceLocations("classpath:/META-INF/resources/webjars/");
     }
 
     /**
-     * 扩展消息转换器
+     * Extends Spring MVC's message converters by adding a custom Jackson converter.
      */
     @Override
     protected void extendMessageConverters(List<HttpMessageConverter<?>> converters) {
-        // 创建一个消息转换器
+        log.info("Extend Spring MVC message converters...");
+        //create a Jackson-based HTTP message converter
         MappingJackson2HttpMessageConverter messageConverter = new MappingJackson2HttpMessageConverter();
-        // 设置对象转换器，将java对象序列化
+        //use custom ObjectMapper for JSON serialization/deserialization
         messageConverter.setObjectMapper(new JacksonObjectMapper());
-        // 消息转换器添加到容器中
+        //add custom converter with the highest priority
         converters.add(0, messageConverter);
    }
 }

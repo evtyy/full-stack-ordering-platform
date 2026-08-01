@@ -8,15 +8,16 @@ import java.io.Serializable;
 import java.util.List;
 
 /**
- * 封装分页查询结果
+ * Wrapper class for paginated query results
  */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class PageResult<T> implements Serializable {
+    //total number of records
+    private long total;
 
-    private long total; //总记录数
-
-    private List<T> records; //当前页数据集合
+    //data records in current page
+    private List<T> records;
 
 }

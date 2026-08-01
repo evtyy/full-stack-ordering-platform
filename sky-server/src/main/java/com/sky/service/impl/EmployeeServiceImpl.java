@@ -32,73 +32,81 @@ public class EmployeeServiceImpl implements EmployeeService {
     private EmployeeMapper employeeMapper;
 
     /**
-     * 员工登录
+     * Authenticate employee login request
      *
-     * @param employeeLoginDTO
-     * @return
+     * @param employeeLoginDTO employee login info
+     * @return employee entity after successful authentication
      */
     public Employee login(EmployeeLoginDTO employeeLoginDTO) {
         String username = employeeLoginDTO.getUsername();
         String password = employeeLoginDTO.getPassword();
 
-        //1、根据用户名查询数据库中的数据
+        //1. Query employee information from database by username
         Employee employee = employeeMapper.getByUsername(username);
 
-        //2、处理各种异常情况（用户名不存在、密码不对、账号被锁定）
+        //2. Handle authentication exceptions
+        //check whether username exists
         if (employee == null) {
-            //账号不存在
             throw new AccountNotFoundException(MessageConstant.ACCOUNT_NOT_FOUND);
         }
 
-        //密码比对
-        //对前端传递过来的明文密码进行md5加密处理
+        //encrypt plain text password using MD5 before comparison
         password = DigestUtils.md5DigestAsHex(password.getBytes());
+
+        //check if password matches
         if (!password.equals(employee.getPassword())) {
-            //密码错误
             throw new PasswordErrorException(MessageConstant.PASSWORD_ERROR);
         }
 
+        //check if employee account is disabled
         if (Objects.equals(employee.getStatus(), StatusConstant.DISABLE)) {
-            //账号被锁定
             throw new AccountLockedException(MessageConstant.ACCOUNT_LOCKED);
         }
 
-        //3、返回实体对象
+        //3.return authenticated employee info
         return employee;
     }
 
     /**
-     * New Employee
-     * @param employeeDTO
+     * Create new employee
+     * @param employeeDTO employee info submitted from frontend
      */
     public void save(EmployeeDTO employeeDTO) {
         Employee employee = new Employee();
 
-        // copy matching fields from DTO to Entity
+        //copy matching fields from DTO to Entity
         BeanUtils.copyProperties(employeeDTO, employee);
 
-        // set account status, default 1 = normal, 0 = locked
+        //set account status, default 1 = normal, 0 = locked
         employee.setStatus(StatusConstant.ENABLE);
 
-        // set password, default password: MD5 version of 123456
+        //set password, default password: MD5 version of 123456
         employee.setPassword(DigestUtils.md5DigestAsHex(PasswordConstant.DEFAULT_PASSWORD.getBytes()));
 
-        // set creation and update time
+        //set creation and update time
         LocalDateTime now = LocalDateTime.now();
         employee.setCreateTime(now);
         employee.setUpdateTime(now);
 
-        // note creator ID and editor ID
+        //note creator ID and editor ID
         Long id = BaseContext.getCurrentId();
         employee.setCreateUser(id);
         employee.setUpdateUser(id);
 
+        //save employee info into database
         employeeMapper.insert(employee);
     }
 
+    /**
+     * 分页查询
+     * @param employeePageQueryDTO
+     * @return
+     */
     @Override
     public PageResult pageQuery(EmployeePageQueryDTO employeePageQueryDTO) {
+        //configure pagination parameters
         PageHelper.startPage(employeePageQueryDTO.getPage(), employeePageQueryDTO.getPageSize());
+        //query paginated employee data
         Page<Employee> page = employeeMapper.pageQuery(employeePageQueryDTO);
 
         long total = page.getTotal();
@@ -109,6 +117,8 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Override
     public void startOrStop(Integer status, Long id) {
+
+        //update employee status and modification time
         Employee employee = Employee.builder()
                 .updateTime(LocalDateTime.now())
                 .id(id)
@@ -119,15 +129,22 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Override
     public Employee getById(Long id) {
+        //query employee info by employee ID
         return employeeMapper.getById(id);
     }
 
     @Override
     public void update(EmployeeDTO employeeDTO) {
         Employee employee = new Employee();
+
+        //copy updated employee info from DTO to Entity
         BeanUtils.copyProperties(employeeDTO, employee);
+
+        //update modification time and updater ID
         employee.setUpdateTime(LocalDateTime.now());
         employee.setUpdateUser(BaseContext.getCurrentId());
+
+        //update employee info in database
         employeeMapper.update(employee);
     }
 
