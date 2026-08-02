@@ -45,7 +45,7 @@ public interface EmployeeMapper {
     void update(Employee employee);
 
     /**
-     * Query employee info by id
+     * Get employee info by id
      * @param id
      * @return
      */

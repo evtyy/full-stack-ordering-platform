@@ -105,18 +105,28 @@ public class EmployeeController {
         return Result.success();
     }
 
+    /**
+     * Get employee by ID
+     * @param id
+     * @return
+     */
     @GetMapping("/{id}")
-    @ApiOperation("根据ID查询员工信息")
+    @ApiOperation("Get employee by ID")
     public Result<Employee> getById(@PathVariable("id") Long id) {
-        log.info("根据ID查询员工信息{}", id);
+        log.info("Get employee by ID: {}", id);
         Employee employee = employeeService.getById(id);
         return Result.success(employee);
     }
 
+    /**
+     * Edit employee info
+     * @param employeeDTO
+     * @return
+     */
     @PutMapping
-    @ApiOperation(value = "修改员工信息")
+    @ApiOperation("Edit employee info")
     public Result update(@RequestBody EmployeeDTO employeeDTO) {
-        log.info("修改员工信息{}", employeeDTO);
+        log.info("Edit employee info: {}", employeeDTO);
         employeeService.update(employeeDTO);
         return Result.success();
     }
