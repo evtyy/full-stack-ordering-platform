@@ -118,7 +118,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Override
     public void startOrStop(Integer status, Long id) {
 
-        //update employee status and modification time
+        //update employee status = ? where id = ? and modification time
         Employee employee = Employee.builder()
                 .updateTime(LocalDateTime.now())
                 .id(id)

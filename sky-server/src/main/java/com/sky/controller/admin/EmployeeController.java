@@ -91,10 +91,16 @@ public class EmployeeController {
         return Result.success(result);
     }
 
-    @GetMapping("/status/{status}")
-    @ApiOperation(value = "员工状态禁用启用")
+    /**
+     * Enable/disable employee account
+     * @param status
+     * @param id
+     * @return
+     */
+    @PostMapping("/status/{status}")
+    @ApiOperation(value = "Enable/disable employee account")
     public Result startOrStop(@PathVariable("status") Integer status, Long id) {
-        log.info("启用禁用员工状态{}", status);
+        log.info("Enable/disable employee account: {},{}", status,id);
         employeeService.startOrStop(status, id);
         return Result.success();
     }
