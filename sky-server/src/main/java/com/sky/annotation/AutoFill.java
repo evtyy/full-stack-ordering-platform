@@ -8,11 +8,11 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * 自定义注解，标识某个方法字段自动填充
+ * Custom annotation to mark methods that require autofill of common fields
  */
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface AutoFill {
-    // 数据库操作类型 UPDATE INSERT
+    // Database operation types: UPDATE INSERT
     OperationType value();
 }

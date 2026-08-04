@@ -5,7 +5,6 @@ import com.github.pagehelper.PageHelper;
 import com.sky.constant.MessageConstant;
 import com.sky.constant.PasswordConstant;
 import com.sky.constant.StatusConstant;
-import com.sky.context.BaseContext;
 import com.sky.dto.EmployeeDTO;
 import com.sky.dto.EmployeeLoginDTO;
 import com.sky.dto.EmployeePageQueryDTO;
@@ -84,14 +83,14 @@ public class EmployeeServiceImpl implements EmployeeService {
         employee.setPassword(DigestUtils.md5DigestAsHex(PasswordConstant.DEFAULT_PASSWORD.getBytes()));
 
         //set creation and update time
-        LocalDateTime now = LocalDateTime.now();
-        employee.setCreateTime(now);
-        employee.setUpdateTime(now);
-
-        //note creator ID and editor ID
-        Long id = BaseContext.getCurrentId();
-        employee.setCreateUser(id);
-        employee.setUpdateUser(id);
+//        LocalDateTime now = LocalDateTime.now();
+//        employee.setCreateTime(now);
+//        employee.setUpdateTime(now);
+//
+//        //note creator ID and editor ID
+//        Long id = BaseContext.getCurrentId();
+//        employee.setCreateUser(id);
+//        employee.setUpdateUser(id);
 
         //save employee info into database
         employeeMapper.insert(employee);
@@ -142,9 +141,9 @@ public class EmployeeServiceImpl implements EmployeeService {
         //copy updated employee info from DTO to Entity
         BeanUtils.copyProperties(employeeDTO, employee);
 
-        //update modification time and copy ID
-        employee.setUpdateTime(LocalDateTime.now());
-        employee.setUpdateUser(BaseContext.getCurrentId());
+        //update modification time and copy  ID
+//        employee.setUpdateTime(LocalDateTime.now());
+//        employee.setUpdateUser(BaseContext.getCurrentId());
 
         //update employee info in database
         employeeMapper.update(employee);

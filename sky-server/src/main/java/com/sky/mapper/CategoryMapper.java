@@ -15,7 +15,7 @@ import java.util.List;
 public interface CategoryMapper {
 
     /**
-     * 插入数据
+     * Insert info into category
      * @param category
      */
     @Insert("insert into category(type, name, sort, status, create_time, update_time, create_user, update_user)" +
@@ -25,28 +25,28 @@ public interface CategoryMapper {
     void insert(Category category);
 
     /**
-     * 分页查询
+     * Paginated query
      * @param categoryPageQueryDTO
      * @return
      */
     Page<Category> pageQuery(CategoryPageQueryDTO categoryPageQueryDTO);
 
     /**
-     * 根据id删除分类
+     * Delete category by id
      * @param id
      */
     @Delete("delete from category where id = #{id}")
     void deleteById(Long id);
 
     /**
-     * 根据id修改分类
+     * Edit category by id
      * @param category
      */
     @AutoFill(value = OperationType.UPDATE)
     void update(Category category);
 
     /**
-     * 根据类型查询分类
+     * Get categories by type
      * @param type
      * @return
      */

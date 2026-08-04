@@ -17,60 +17,60 @@ import java.lang.reflect.Method;
 import java.time.LocalDateTime;
 
 /**
- * 自动填充切面类，实现公共自动填充
+ * Aspect class that automatically fills common fields
  */
 @Aspect
 @Component
 @Slf4j
 public class AutoFillAspect {
-    // 切入点
+    //Pointcut: intercept all mapper methods annotated with @AutoFill
     @Pointcut("execution(* com.sky.mapper.*.*(..)) && @annotation(com.sky.annotation.AutoFill)")
-    public void autoFillPointCut() {
-
-    }
+    public void autoFillPointCut() {}
 
     /**
-     * 自定义前置通知
-     * @param{JoinPoint} joinPoint
+     * Before advice that populates common fields
+     * @param{JoinPoint} joinPoint the intercepted method
      */
     @Before("autoFillPointCut()")
     public void autoFill(JoinPoint joinPoint) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
-        log.info("开始进行公共字段自动填充");
+        log.info("Starting automatic common field population...");
 
-        // 获取操作类型
-        MethodSignature signature = (MethodSignature) joinPoint.getSignature(); // 方法签名对象
-        AutoFill autoFill = signature.getMethod().getAnnotation(AutoFill.class); // 获得方法上的注解对象
-        OperationType operationType = autoFill.value(); // 获取数据库实际操作类型
+        //Get operation type (INSERT/UPDATE)
+        MethodSignature signature = (MethodSignature) joinPoint.getSignature(); // Get method signature
+        AutoFill autoFill = signature.getMethod().getAnnotation(AutoFill.class); // Get the @AutoFill annotation
+        OperationType operationType = autoFill.value(); // Get the database operation type
         
-        // 获取拦截的方法参数 -- 实体对象
-        Object[] args = joinPoint.getArgs(); // 获取所有参数
-        if (args.length == 0) {
+        //Get the intercepted method arguments (entity object)
+        Object[] args = joinPoint.getArgs(); // Get all method arguments
+        if (args == null || args.length == 0) {
             return;
         }
         
-        Object entity = args[0]; // 获取第一个实体
+        Object entity = args[0]; // Get the 1st entity
         
-        // 准备赋值的数据
+        //Prepare values to assign
         LocalDateTime now = LocalDateTime.now();
         Long currentId = BaseContext.getCurrentId();
         
-        // 根据不同的操作类型，为对应的字段赋值
+        //Assign values to common fields via reflection based on operation type
         if (operationType == OperationType.INSERT) {
-            // 为4个公共字段赋值
-            Method setUpdateTime = entity.getClass().getDeclaredMethod(AutoFillConstant.SET_UPDATE_TIME, LocalDateTime.class);
-            Method setUpdateUser = entity.getClass().getDeclaredMethod(AutoFillConstant.SET_UPDATE_USER, Long.class);
+            //Set all 4 common fields
             Method setCreateTime = entity.getClass().getDeclaredMethod(AutoFillConstant.SET_CREATE_TIME, LocalDateTime.class);
             Method setCreateUser = entity.getClass().getDeclaredMethod(AutoFillConstant.SET_CREATE_USER, Long.class);
-
-            // 通过反射赋值
-            setUpdateTime.invoke(entity, now);
-            setUpdateUser.invoke(entity, currentId);
-            setCreateTime.invoke(entity, now);
-            setCreateUser.invoke(entity, currentId);
-        } else if (operationType == OperationType.UPDATE) {
             Method setUpdateTime = entity.getClass().getDeclaredMethod(AutoFillConstant.SET_UPDATE_TIME, LocalDateTime.class);
             Method setUpdateUser = entity.getClass().getDeclaredMethod(AutoFillConstant.SET_UPDATE_USER, Long.class);
 
+            //Invoke setters via reflection
+            setCreateTime.invoke(entity, now);
+            setCreateUser.invoke(entity, currentId);
+            setUpdateTime.invoke(entity, now);
+            setUpdateUser.invoke(entity, currentId);
+        } else if (operationType == OperationType.UPDATE) {
+            //Set 2 common fields
+            Method setUpdateTime = entity.getClass().getDeclaredMethod(AutoFillConstant.SET_UPDATE_TIME, LocalDateTime.class);
+            Method setUpdateUser = entity.getClass().getDeclaredMethod(AutoFillConstant.SET_UPDATE_USER, Long.class);
+
+            //Invoke setters via reflection
             setUpdateTime.invoke(entity, now);
             setUpdateUser.invoke(entity, currentId);
         }
