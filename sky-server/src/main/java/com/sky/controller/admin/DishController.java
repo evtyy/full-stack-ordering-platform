@@ -18,6 +18,9 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Set;
 
+/**
+ *  Dish Manager
+ */
 @RestController
 @RequestMapping("/admin/dish")
 @Api(tags = "菜品相关接口")
@@ -30,6 +33,11 @@ public class DishController {
     @Autowired
     private RedisTemplate redisTemplate;
 
+    /**
+     * New dishes
+     * @param dishDTO
+     * @return
+     */
     @PostMapping
     @ApiOperation("新增菜品")
     public Result save(@RequestBody DishDTO dishDTO) {
