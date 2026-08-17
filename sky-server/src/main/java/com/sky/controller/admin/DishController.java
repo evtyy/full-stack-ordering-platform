@@ -39,9 +39,9 @@ public class DishController {
      * @return
      */
     @PostMapping
-    @ApiOperation("新增菜品")
+    @ApiOperation("Add new dish")
     public Result save(@RequestBody DishDTO dishDTO) {
-        log.info("新增菜品：{}", dishDTO);
+        log.info("Add new dish：{}", dishDTO);
         dishService.saveWithFlavor(dishDTO);
         return Result.success();
     }
@@ -69,7 +69,7 @@ public class DishController {
     @PostMapping("/status/{status}")
     public Result<String> startOrStop(@PathVariable Integer status, Long id) {
         // 1. enable (on sale) 0. disable (discontinued)
-        log.info("启用或停用菜品：{}", id);
+        log.info("Enable or disable dish：{}", id);
         dishService.startOrStop(status, id);
         clearRedis("dish_*");
         return Result.success();
@@ -117,7 +117,7 @@ public class DishController {
     public Result update(@RequestBody DishDTO dishDTO) {
         log.info("Update dish: {}", dishDTO);
 
-        //Clear cache for this dish's category
+        //clear cache for this dish's category
         String key = "dish_" + dishDTO.getCategoryId();
         redisTemplate.delete(key);
 

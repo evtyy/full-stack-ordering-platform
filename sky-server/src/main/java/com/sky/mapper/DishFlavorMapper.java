@@ -31,7 +31,7 @@ public interface DishFlavorMapper {
     List<DishFlavor> getByDishId(Long dishId);
 
     /**
-     * batch delete flavors associated with dish by dish IDs
+     * Batch delete flavors associated with dish by dish IDs
      * @param dishIds
      */
     void deleteByDishIds(Long[] dishIds);

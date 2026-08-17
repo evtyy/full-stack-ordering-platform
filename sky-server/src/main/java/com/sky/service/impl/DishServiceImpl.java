@@ -146,7 +146,7 @@ public class DishServiceImpl implements DishService {
 
         if (dish != null) {
             BeanUtils.copyProperties(dish, dishVO);
-            // Query the flavor data corresponding to the dish, from the dish_flavor table
+            //query flavor data corresponding to the dish, from the dish_flavor table
             List<DishFlavor> flavors = dishFlavorMapper.getByDishId(id);
             dishVO.setFlavors(flavors);
         }
@@ -164,17 +164,17 @@ public class DishServiceImpl implements DishService {
         Dish dish = new Dish();
         BeanUtils.copyProperties(dishDTO, dish);
 
-        // Update basic dish table info
+        //update basic dish table info
         dishMapper.update(dish);
 
-        // Delete existing flavor data
-        dishFlavorMapper.deleteByDishId(dish.getId());
+        //delete existing flavor data
+        dishFlavorMapper.deleteByDishId(dishDTO.getId());
 
         List<DishFlavor> flavors = dishDTO.getFlavors();
         if (flavors != null && !flavors.isEmpty()) {
-            // Batch insert n records
+            //batch insert n records
             flavors.forEach(flavor -> {
-                flavor.setDishId(dish.getId());
+                flavor.setDishId(dishDTO.getId());
             });
             dishFlavorMapper.insertBatch(flavors);
         }
