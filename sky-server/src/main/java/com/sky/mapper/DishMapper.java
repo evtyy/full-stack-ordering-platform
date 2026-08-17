@@ -96,4 +96,10 @@ public interface DishMapper {
      * @return
      */
     Integer countByMap(Map map);
+
+    /**
+     * Batch delete dishes by IDs
+     * @param ids
+     */
+    void deleteByIds(List<Long> ids);
 }
