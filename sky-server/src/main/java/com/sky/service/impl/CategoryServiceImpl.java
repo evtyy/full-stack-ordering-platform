@@ -76,14 +76,14 @@ public class CategoryServiceImpl implements CategoryService {
         Integer count = dishMapper.countByCategoryId(id);
         if(count > 0){
             //当前分类下有菜品，不能删除
-            throw new DeletionNotAllowedException(MessageConstant.CATEGORY_BE_RELATED_BY_DISH);
+            throw new DeletionNotAllowedException(MessageConstant.CATEGORY_LINKED_TO_DISH);
         }
 
         //查询当前分类是否关联了套餐，如果关联了就抛出业务异常
         count = setmealMapper.countByCategoryId(id);
         if(count > 0){
             //当前分类下有菜品，不能删除
-            throw new DeletionNotAllowedException(MessageConstant.CATEGORY_BE_RELATED_BY_SETMEAL);
+            throw new DeletionNotAllowedException(MessageConstant.CATEGORY_LINKED_TO_SETMEAL);
         }
 
         //删除分类数据

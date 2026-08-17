@@ -11,14 +11,14 @@ import java.util.List;
 public interface DishService {
 
     /**
-     * 新增菜品和对应的口味
+     * Add dish with flavors
      *
      * @param dishDTO
      */
     public void saveWithFlavor(DishDTO dishDTO);
 
     /**
-     * 菜品分页查询
+     * Paginated dish query
      *
      * @param dishPageQueryDTO
      * @return
@@ -26,14 +26,14 @@ public interface DishService {
     PageResult pageQuery(DishPageQueryDTO dishPageQueryDTO);
 
     /**
-     * 菜品批量删除
+     * Delete dishes in batch
      *
      * @param ids
      */
     void deleteBatch(Long[] ids);
 
     /**
-     * 根据id查询菜品和对应的口味数据
+     * Get dish and its flavors by ID
      *
      * @param id
      * @return
@@ -41,14 +41,14 @@ public interface DishService {
     DishVO getByIdWithFlavor(Long id);
 
     /**
-     * 根据id修改菜品基本信息和对应的口味信息
+     * Update dish info and its flavors by ID
      *
      * @param dishDTO
      */
     void updateWithFlavor(DishDTO dishDTO);
 
     /**
-     * 菜品起售停售
+     * Discontinue or put dish on sale
      *
      * @param status
      * @param id
@@ -56,7 +56,7 @@ public interface DishService {
     void startOrStop(Integer status, Long id);
 
     /**
-     * 根据分类id查询菜品
+     * Get dishes by category ID
      *
      * @param categoryId
      * @return
@@ -64,7 +64,7 @@ public interface DishService {
     List<Dish> list(Long categoryId);
 
     /**
-     * 条件查询菜品和口味
+     * Query dishes and flavors by condition
      * @param dish
      * @return
      */

@@ -17,7 +17,7 @@ import java.util.Map;
 public interface DishMapper {
 
     /**
-     * 根据分类id查询菜品数量
+     * Query dish count by category id
      *
      * @param categoryId
      * @return
@@ -26,7 +26,7 @@ public interface DishMapper {
     Integer countByCategoryId(Long categoryId);
 
     /**
-     * 插入菜品数据
+     * Insert dish data
      *
      * @param dish
      */
@@ -34,7 +34,7 @@ public interface DishMapper {
     void insert(Dish dish);
 
     /**
-     * 菜品分页查询
+     * Paginated dish query
      *
      * @param dishPageQueryDTO
      * @return
@@ -42,7 +42,7 @@ public interface DishMapper {
     Page<DishVO> pageQuery(DishPageQueryDTO dishPageQueryDTO);
 
     /**
-     * 根据主键查询菜品
+     * Query dish by primary key
      *
      * @param id
      * @return
@@ -51,7 +51,7 @@ public interface DishMapper {
     Dish getById(Long id);
 
     /**
-     * 根据分类ID查询菜品
+     * Query dishes by category ID
      * @param categoryId
      * @return
      */
@@ -59,7 +59,7 @@ public interface DishMapper {
     List<Dish> getListById(Long categoryId);
 
     /**
-     * 根据主键删除菜品数据
+     * Delete dish data by primary key
      *
      * @param id
      */
@@ -67,7 +67,7 @@ public interface DishMapper {
     void deleteById(Long id);
 
     /**
-     * 根据id动态修改菜品数据
+     * Dynamically update dish data by id
      *
      * @param dish
      */
@@ -75,7 +75,7 @@ public interface DishMapper {
     void update(Dish dish);
 
     /**
-     * 动态条件查询菜品
+     * Dynamically query dishes by condition
      *
      * @param dish
      * @return
@@ -83,7 +83,7 @@ public interface DishMapper {
     List<Dish> list(Dish dish);
 
     /**
-     * 根据套餐id查询菜品
+     * Query dishes by set meal id
      * @param setmealId
      * @return
      */
@@ -91,7 +91,7 @@ public interface DishMapper {
     List<Dish> getBySetmealId(Long setmealId);
 
     /**
-     * 根据条件统计菜品数量
+     * Count dishes by condition
      * @param map
      * @return
      */

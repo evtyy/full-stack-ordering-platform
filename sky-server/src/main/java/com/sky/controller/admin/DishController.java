@@ -23,7 +23,7 @@ import java.util.Set;
  */
 @RestController
 @RequestMapping("/admin/dish")
-@Api(tags = "菜品相关接口")
+@Api(tags = "Dish endpoints")
 @Slf4j
 public class DishController {
     @Autowired
@@ -34,7 +34,7 @@ public class DishController {
     private RedisTemplate redisTemplate;
 
     /**
-     * New dishes
+     * Add new dish
      * @param dishDTO
      * @return
      */
@@ -46,37 +46,47 @@ public class DishController {
         return Result.success();
     }
 
+    /**
+     * Paginated dish query
+     * @param dishPageQueryDTO
+     * @return
+     */
     @GetMapping("/page")
-    @ApiOperation("菜品分页查询")
+    @ApiOperation("Paginated dish query")
     public Result<PageResult> page(DishPageQueryDTO dishPageQueryDTO) {
-        log.info("菜品分页查询：{}", dishPageQueryDTO);
+        log.info("Paginated dish query: {}", dishPageQueryDTO);
         dishPageQueryDTO.setPageSize(100000);
         return Result.success(dishService.pageQuery(dishPageQueryDTO));
     }
 
 
     /**
-     * 启用或停用菜品
-     *
+     * Enable or disable dish
      * @param status
      * @param id
      * @return
      */
     @PostMapping("/status/{status}")
     public Result<String> startOrStop(@PathVariable Integer status, Long id) {
-        // 1. 启用 0. 停用
+        // 1. enable (on sale) 0. disable (discontinued)
         log.info("启用或停用菜品：{}", id);
         dishService.startOrStop(status, id);
         clearRedis("dish_*");
         return Result.success();
     }
 
+    /**
+     * Delete dishes by ID
+     * @param ids
+     * @return
+     */
     @DeleteMapping
-    @ApiOperation("删除菜品")
+    @ApiOperation("Delete dish")
     public Result delete(@RequestParam Long[] ids) {
+        log.info("Delete dishes by ID: {}", ids);
         dishService.deleteBatch(ids);
 
-        // 将所有菜品缓存数据清理，所有以dish_的key
+        //clear all dish cache keys matching dish_*
         Set keys = redisTemplate.keys("dish_*");
         if (keys != null) {
             redisTemplate.delete(keys);
@@ -85,19 +95,29 @@ public class DishController {
         return Result.success();
     }
 
+    /**
+     * Get dish by ID with flavors
+     * @param id
+     * @return
+     */
     @GetMapping("/{id}")
-    @ApiOperation("根据ID查询指定菜品")
+    @ApiOperation("Get dish by ID")
     public Result<DishVO> getByIdWithFlavor(@PathVariable Long id) {
-        log.info("根据ID查询指定菜品：{}", id);
+        log.info("Get dish by ID: {}", id);
         return Result.success(dishService.getByIdWithFlavor(id));
     }
 
+    /**
+     * Update dish info
+     * @param dishDTO
+     * @return
+     */
     @PutMapping
-    @ApiOperation("更新菜品信息")
+    @ApiOperation("Update dish")
     public Result update(@RequestBody DishDTO dishDTO) {
-        log.info("更新菜品信息：{}", dishDTO);
+        log.info("Update dish: {}", dishDTO);
 
-        // 更新缓存数据
+        //Clear cache for this dish's category
         String key = "dish_" + dishDTO.getCategoryId();
         redisTemplate.delete(key);
 
@@ -106,7 +126,7 @@ public class DishController {
     }
 
     /**
-     * 根据分类id查询菜品
+     * Get dishes by category ID
      *
      * @param categoryId
      * @return
@@ -117,6 +137,10 @@ public class DishController {
         return Result.success(dishList);
     }
 
+    /**
+     * Clear Redis cache keys matching the given pattern (e.g. "dish_*")
+     * @param keys
+     */
     private void clearRedis(String keys) {
         Set<String> cacheKeys = redisTemplate.keys(keys);
         redisTemplate.delete(cacheKeys);
