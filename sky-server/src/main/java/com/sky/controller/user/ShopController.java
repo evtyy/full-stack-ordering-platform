@@ -1,4 +1,4 @@
-package com.sky.controller.admin;
+package com.sky.controller.user;
 
 import com.sky.result.Result;
 import io.swagger.annotations.Api;
@@ -8,8 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.*;
 
-@RestController("adminShopController")
-@RequestMapping("/admin/shop")
+@RestController("userShopController")
+@RequestMapping("/user/shop")
 @Api(tags = "Shop endpoints")
 @Slf4j
 public class ShopController {
@@ -18,19 +18,6 @@ public class ShopController {
 
     @Autowired
     private RedisTemplate<String, Object> redisTemplate;
-
-    /**
-     * Set shop business status
-     * @param status
-     * @return
-     */
-    @PutMapping("/{status}")
-    @ApiOperation("Set shop business status")
-    public Result setStatus(@PathVariable Integer status) {
-        log.info("Set shop business status to: {}", status == 1 ? "Open" : "Closed");
-        redisTemplate.opsForValue().set(KEY, status);
-        return Result.success();
-    }
 
     /**
      * Get shop business status

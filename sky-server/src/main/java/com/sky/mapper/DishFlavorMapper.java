@@ -10,20 +10,20 @@ import java.util.List;
 @Mapper
 public interface DishFlavorMapper {
     /**
-     * 批量插入口味数据
+     * Batch insert flavors
      * @param flavors
      */
     void insertBatch(List<DishFlavor> flavors);
 
     /**
-     * 根据菜品id删除对应的口味数据
+     * Delete flavors by dish ID
      * @param dishId
      */
     @Delete("delete from dish_flavor where dish_id = #{dishId}")
     void deleteByDishId(Long dishId);
 
     /**
-     * 根据菜品id查询对应的口味数据
+     * Get flavors by dish ID
      * @param dishId
      * @return
      */
