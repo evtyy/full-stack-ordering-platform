@@ -43,6 +43,10 @@ public class DishController {
     public Result save(@RequestBody DishDTO dishDTO) {
         log.info("Add new dish：{}", dishDTO);
         dishService.saveWithFlavor(dishDTO);
+
+        //clear cache data
+        String key = "dish_" + dishDTO.getCategoryId();
+        clearRedis(key);
         return Result.success();
     }
 
@@ -87,10 +91,7 @@ public class DishController {
         dishService.deleteBatch(ids);
 
         //clear all dish cache keys matching dish_*
-        Set keys = redisTemplate.keys("dish_*");
-        if (keys != null) {
-            redisTemplate.delete(keys);
-        }
+        clearRedis("dish_*");
 
         return Result.success();
     }
@@ -117,11 +118,11 @@ public class DishController {
     public Result update(@RequestBody DishDTO dishDTO) {
         log.info("Update dish: {}", dishDTO);
 
-        //clear cache for this dish's category
-        String key = "dish_" + dishDTO.getCategoryId();
-        redisTemplate.delete(key);
-
         dishService.updateWithFlavor(dishDTO);
+
+        //clear cache for this dish's category
+        clearRedis("dish_*");
+
         return Result.success();
     }
 
