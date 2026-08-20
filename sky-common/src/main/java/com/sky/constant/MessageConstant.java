@@ -24,5 +24,7 @@ public class MessageConstant {
     public static final String DISH_LINKED_TO_SETMEAL = "Dish is linked to a setmeal, cannot be deleted";
     public static final String ORDER_STATUS_ERROR = "Order status error";
     public static final String ORDER_NOT_FOUND = "Order not found";
+    public static final String PHONE_REQUIRED = "Phone number is required";
+    public static final String STRIPE_SESSION_NOT_FOUND = "Stripe checkout session not found";
 
 }

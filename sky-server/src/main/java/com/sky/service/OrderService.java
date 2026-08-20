@@ -6,30 +6,45 @@ import com.sky.vo.OrderPaymentVO;
 import com.sky.vo.OrderStatisticsVO;
 import com.sky.vo.OrderSubmitVO;
 import com.sky.vo.OrderVO;
+import com.sky.vo.StripeCheckoutVO;
 
 public interface OrderService {
     /**
-     * 用户下单
+     * User submit order
      * @param ordersSubmitDTO
      * @return
      */
     OrderSubmitVO submitOrder(OrdersSubmitDTO ordersSubmitDTO);
 
     /**
-     * 订单支付
+     * Order payment
      * @param ordersPaymentDTO
      * @return
      */
     OrderPaymentVO payment(OrdersPaymentDTO ordersPaymentDTO) throws Exception;
 
     /**
-     * 支付成功，修改订单状态
+     * Payment success, update order status
      * @param outTradeNo
      */
     void paySuccess(String outTradeNo);
 
     /**
-     * 用户端订单分页查询
+     * Create a Stripe Checkout Session for an order and return its hosted payment URL
+     * @param ordersPaymentDTO
+     * @return
+     */
+    StripeCheckoutVO createCheckoutSession(OrdersPaymentDTO ordersPaymentDTO) throws Exception;
+
+    /**
+     * Confirm a Stripe Checkout Session and mark the order as paid if Stripe reports it paid
+     * @param sessionId
+     * @return true if the order is (now, or already was) paid
+     */
+    boolean confirmCheckoutSession(String sessionId) throws Exception;
+
+    /**
+     * Customer-side paginated order query
      * @param page
      * @param pageSize
      * @param status
@@ -38,74 +53,74 @@ public interface OrderService {
     PageResult<OrderVO> pageQueryByUser(int page, int pageSize, Integer status);
 
     /**
-     * 查询订单详情
+     * Check order details
      * @param id
      * @return
      */
     OrderVO details(Long id);
 
     /**
-     * 用户取消订单
+     * User cancel order
      * @param id
      */
     void userCancelById(Long id) throws Exception;
 
     /**
-     * 再来一单
+     * Reorder
      * @param id
      */
     void repetition(Long id);
 
     /**
-     * 条件搜索订单
+     * Conditional order search
      * @param ordersPageQueryDTO
      * @return
      */
     PageResult<OrderVO> conditionSearch(OrdersPageQueryDTO ordersPageQueryDTO);
 
     /**
-     * 各个状态的订单数量统计
+     * Order count statistics by status
      * @return
      */
     OrderStatisticsVO statistics();
 
     /**
-     * 接单
+     * Confirm order
      *
      * @param ordersConfirmDTO
      */
     void confirm(OrdersConfirmDTO ordersConfirmDTO);
 
     /**
-     * 拒单
+     * Reject order
      *
      * @param ordersRejectionDTO
      */
     void rejection(OrdersRejectionDTO ordersRejectionDTO) throws Exception;
 
     /**
-     * 商家取消订单
+     * Admin cancel order
      *
      * @param ordersCancelDTO
      */
     void cancel(OrdersCancelDTO ordersCancelDTO) throws Exception;
 
     /**
-     * 派送订单
+     * Deliver order
      *
      * @param id
      */
     void delivery(Long id);
 
     /**
-     * 完成订单
+     * Complete order
      *
      * @param id
      */
     void complete(Long id);
 
     /**
-     * 客户催单
+     * User rushes order
      * @param id
      */
     void reminder(Long id);

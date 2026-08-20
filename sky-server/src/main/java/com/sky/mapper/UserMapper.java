@@ -10,7 +10,7 @@ import java.util.Map;
 public interface UserMapper {
 
     /**
-     * 根据openid查询用户
+     * Find a user by openid
      * @param openid
      * @return
      */
@@ -18,7 +18,15 @@ public interface UserMapper {
     User getByOpenid(String openid);
 
     /**
-     * 插入数据
+     * Find a user by phone number
+     * @param phone
+     * @return
+     */
+    @Select("select * from user where phone = #{phone}")
+    User getByPhone(String phone);
+
+    /**
+     * Insert new record
      * @param user
      */
     void insert(User user);
@@ -27,7 +35,7 @@ public interface UserMapper {
     User getById(Long userId);
 
     /**
-     * 根据动态条件统计用户数量
+     * Count users matching dynamic conditions
      * @param map
      * @return
      */

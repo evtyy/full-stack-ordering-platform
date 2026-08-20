@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.sky.constant.MessageConstant;
 import com.sky.dto.UserLoginDTO;
+import com.sky.dto.WebUserLoginDTO;
 import com.sky.entity.User;
 import com.sky.exception.LoginFailedException;
 import com.sky.mapper.UserMapper;
@@ -21,7 +22,7 @@ import java.util.Map;
 @Service
 @Slf4j
 public class UserServiceImpl implements UserService {
-    // 微信接口地址
+    //Wechat API endpoint
     public static final String WX_LOGIN = "https://api.weixin.qq.com/sns/jscode2session";
 
     @Autowired
@@ -31,14 +32,14 @@ public class UserServiceImpl implements UserService {
     private UserMapper userMapper;
 
     /**
-     * 微信登录
+     * Wechat login
      *
      * @param userLoginDTO
      * @return
      */
     @Override
     public User wxLogin(UserLoginDTO userLoginDTO) {
-        // 判断openid是否为空，为空登录成功，抛出异常
+        //Check whether openid is null; if login succeeds it won't be, o/w throw exception
         String openid = getOpenId(userLoginDTO.getCode());
         log.info("openid: {}", openid);
         log.info("UserLoginDto {}", userLoginDTO);
@@ -46,10 +47,10 @@ public class UserServiceImpl implements UserService {
             throw new LoginFailedException(MessageConstant.LOGIN_FAILED);
         }
 
-        // 判断用户是否为新用户
+        //Check if new user
         User user = userMapper.getByOpenid(openid);
         if (user == null) {
-            // 新用户自动完成注册
+            //Auto-register new users
             user = User.builder()
                     .openid(openid)
                     .createTime(LocalDateTime.now())
@@ -57,7 +58,33 @@ public class UserServiceImpl implements UserService {
             userMapper.insert(user);
         }
 
-        // 返回用户对象
+        //Return user obj
+        return user;
+    }
+
+    /**
+     * Customer web app login: find the user by phone number, or create one if none exists
+     *
+     * @param webUserLoginDTO
+     * @return
+     */
+    @Override
+    public User webLogin(WebUserLoginDTO webUserLoginDTO) {
+        String phone = webUserLoginDTO.getPhone();
+        if (phone == null || phone.isEmpty()) {
+            throw new LoginFailedException(MessageConstant.PHONE_REQUIRED);
+        }
+
+        User user = userMapper.getByPhone(phone);
+        if (user == null) {
+            user = User.builder()
+                    .name(webUserLoginDTO.getName())
+                    .phone(phone)
+                    .createTime(LocalDateTime.now())
+                    .build();
+            userMapper.insert(user);
+        }
+
         return user;
     }
 
@@ -68,7 +95,7 @@ public class UserServiceImpl implements UserService {
         reqParams.put("js_code", code);
         reqParams.put("grant_type", "authorization_code");
         String json = HttpClientUtil.doGet(WX_LOGIN, reqParams);
-        log.info("微信接口返回的json: {}", json);
+        log.info("JSON returned by Wechat API: {}", json);
 
         JSONObject parseJson = JSON.parseObject(json);
         return parseJson.getString("openid");

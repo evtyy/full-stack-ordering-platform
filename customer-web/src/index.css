@@ -1,0 +1,292 @@
+:root {
+  --brand: #7e9370;
+  --text: #1c1c1c;
+  --muted: #6b6b6b;
+  --border: #e8e8e8;
+  --bg: #fafafa;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  color: var(--text);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+  border: none;
+  border-radius: 8px;
+  background: var(--brand);
+  color: white;
+  padding: 10px 16px;
+  font-weight: 600;
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.link-button {
+  background: none;
+  color: var(--text);
+  padding: 4px 0;
+  font-weight: 500;
+}
+
+input,
+textarea {
+  font-family: inherit;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: 14px;
+}
+
+/* Auth */
+.auth-screen {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+
+.auth-card {
+  background: white;
+  border-radius: 16px;
+  padding: 32px;
+  width: 100%;
+  max-width: 360px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  text-align: center;
+}
+
+.auth-subtitle {
+  color: var(--muted);
+  margin-top: -8px;
+}
+
+.auth-card label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  text-align: left;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.auth-error {
+  color: #d92d20;
+  font-size: 13px;
+}
+
+/* Menu */
+.menu-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  background: white;
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.menu-header h1 {
+  font-size: 20px;
+  margin: 0;
+}
+
+.menu-body {
+  display: flex;
+  gap: 24px;
+  padding: 20px;
+  max-width: 960px;
+  margin: 0 auto;
+}
+
+.category-tabs {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 160px;
+}
+
+.category-tabs button {
+  background: none;
+  color: var(--text);
+  text-align: left;
+  font-weight: 500;
+  border-radius: 8px;
+}
+
+.category-tabs button.active {
+  background: var(--text);
+  color: white;
+}
+
+.item-grid {
+  flex: 1;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 16px;
+  align-content: start;
+}
+
+.item-card {
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.item-card img {
+  width: 100%;
+  height: 120px;
+  object-fit: cover;
+}
+
+.item-card-body {
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.item-card-body h3 {
+  margin: 0;
+  font-size: 15px;
+}
+
+.item-description {
+  color: var(--muted);
+  font-size: 13px;
+  min-height: 32px;
+}
+
+.item-card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.price {
+  font-weight: 600;
+}
+
+.cart-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: var(--text);
+  color: white;
+  padding: 16px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  z-index: 50;
+}
+
+.cart-bar button {
+  background: var(--brand);
+}
+
+/* Checkout */
+.checkout-page {
+  max-width: 640px;
+  margin: 0 auto;
+  padding-bottom: 40px;
+}
+
+.checkout-page section {
+  background: white;
+  margin: 16px 20px;
+  padding: 16px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+}
+
+.checkout-page h2 {
+  font-size: 16px;
+  margin-top: 0;
+}
+
+.cart-row {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  gap: 16px;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.qty-control {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.qty-control button {
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border-radius: 50%;
+}
+
+.cart-total {
+  text-align: right;
+  font-weight: 700;
+  padding-top: 8px;
+}
+
+.address-option {
+  display: block;
+  padding: 8px 0;
+  font-size: 14px;
+}
+
+.address-form {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.checkout-page textarea {
+  width: 100%;
+  min-height: 60px;
+}
+
+.place-order-button {
+  display: block;
+  width: calc(100% - 40px);
+  margin: 0 20px;
+  padding: 14px;
+  font-size: 16px;
+}
+
+/* Order history */
+.order-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: white;
+  margin: 12px 20px;
+  padding: 16px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+}

@@ -52,5 +52,9 @@ sky:
   wechat:
     appid: ${sky.wechat.app-id}
     secret: ${sky.wechat.app-secret}
+  stripe:
+    secret-key: ${sky.stripe.secret-key}
+    success-url: ${sky.stripe.success-url}
+    cancel-url: ${sky.stripe.cancel-url}
 
 

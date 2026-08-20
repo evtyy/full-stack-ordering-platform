@@ -1,55 +1,42 @@
 package com.sky.service.impl;
 
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
+import com.alibaba.fastjson.JSON;
+import com.github.pagehelper.Page;
+import com.github.pagehelper.PageHelper;
+import com.sky.constant.MessageConstant;
+import com.sky.context.BaseContext;
+import com.sky.dto.*;
+import com.sky.entity.AddressBook;
+import com.sky.entity.OrderDetail;
+import com.sky.entity.Orders;
+import com.sky.entity.ShoppingCart;
+import com.sky.exception.AddressBookBusinessException;
+import com.sky.exception.OrderBusinessException;
+import com.sky.exception.ShoppingCartBusinessException;
+import com.sky.mapper.AddressBookMapper;
+import com.sky.mapper.OrderDetailMapper;
+import com.sky.mapper.OrderMapper;
+import com.sky.mapper.ShoppingCartMapper;
+import com.sky.properties.StripeProperties;
+import com.sky.result.PageResult;
+import com.sky.service.OrderService;
+import com.sky.utils.WeChatPayUtil;
+import com.sky.vo.*;
+import com.sky.websocket.WebSocketServer;
+import com.stripe.Stripe;
+import com.stripe.model.checkout.Session;
+import com.stripe.param.checkout.SessionCreateParams;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
-import com.alibaba.fastjson.JSON;
-import com.github.pagehelper.Page;
-import com.github.pagehelper.PageHelper;
-import com.sky.constant.MessageConstant;
-import com.sky.context.BaseContext;
-import com.sky.dto.OrdersCancelDTO;
-import com.sky.dto.OrdersConfirmDTO;
-import com.sky.dto.OrdersPageQueryDTO;
-import com.sky.dto.OrdersPaymentDTO;
-import com.sky.dto.OrdersRejectionDTO;
-import com.sky.dto.OrdersSubmitDTO;
-import com.sky.entity.AddressBook;
-import com.sky.entity.OrderDetail;
-import com.sky.entity.Orders;
-import com.sky.entity.ShoppingCart;
-// import com.sky.entity.User;
-import com.sky.exception.AddressBookBusinessException;
-import com.sky.exception.OrderBusinessException;
-import com.sky.exception.ShoppingCartBusinessException;
-import com.sky.service.OrderService;
-import com.sky.utils.WeChatPayUtil;
-import com.sky.vo.OrderPaymentVO;
-import com.sky.vo.OrderStatisticsVO;
-import com.sky.vo.OrderSubmitVO;
-import com.sky.vo.OrderVO;
-import com.sky.websocket.WebSocketServer;
-
-import lombok.extern.slf4j.Slf4j;
-
-import com.sky.mapper.AddressBookMapper;
-import com.sky.mapper.OrderDetailMapper;
-import com.sky.mapper.OrderMapper;
-import com.sky.mapper.ShoppingCartMapper;
-// import com.sky.mapper.UserMapper;
-import com.sky.result.PageResult;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -70,14 +57,14 @@ public class OrderServiceImpl implements OrderService {
     @Autowired
     private WeChatPayUtil weChatPayUtil;
 
-    // @Autowired
-    // private UserMapper userMapper;
+    @Autowired
+    private StripeProperties stripeProperties;
 
     @Autowired
     private WebSocketServer webSocketServer;
 
     /**
-     * 用户下单
+     * User submits order
      *
      * @param ordersSubmitDTO
      * @return
@@ -85,10 +72,10 @@ public class OrderServiceImpl implements OrderService {
     @Override
     @Transactional
     public OrderSubmitVO submitOrder(OrdersSubmitDTO ordersSubmitDTO) {
-        // 业务异常处理，地址为空、购物车为空
+        //Business exception handling: empty address, empty cart
         AddressBook addressBook = addressBookMapper.getById(ordersSubmitDTO.getAddressBookId());
         if (addressBook == null) {
-            // 抛出异常
+            //throw exception
             throw new AddressBookBusinessException(MessageConstant.ADDRESS_BOOK_IS_NULL);
         }
         Long userId = BaseContext.getCurrentId();
@@ -96,11 +83,11 @@ public class OrderServiceImpl implements OrderService {
         shoppingCart.setUserId(userId);
         List<ShoppingCart> cartList = shoppingCartMapper.list(shoppingCart);
         if (cartList == null || cartList.isEmpty()) {
-            // 抛出异常
+            //throw exception
             throw new ShoppingCartBusinessException(MessageConstant.SHOPPING_CART_IS_NULL);
         }
 
-        // 订单表插入一条数据
+        //Insert new record into orders table
         Orders orders = new Orders();
         BeanUtils.copyProperties(ordersSubmitDTO, orders);
         orders.setOrderTime(LocalDateTime.now());
@@ -114,7 +101,7 @@ public class OrderServiceImpl implements OrderService {
 
         orderMapper.insert(orders);
 
-        // 订单详情表插入多条数据
+        //Insert multiple records into order detail table
         List<OrderDetail> orderDetailList = new ArrayList<>();
         cartList.forEach(cart -> {
             OrderDetail orderDetail = new OrderDetail();
@@ -124,10 +111,10 @@ public class OrderServiceImpl implements OrderService {
         });
         orderDetailMapper.insertBatch(orderDetailList);
 
-        // 清空购物车
+        //Empty shopping cart
         shoppingCartMapper.deleteByUserId(userId);
 
-        // 返回 VO
+        //Return VO
         OrderSubmitVO orderSubmitVO = OrderSubmitVO.builder()
                 .id(orders.getId())
                 .orderTime(orders.getOrderTime())
@@ -139,50 +126,29 @@ public class OrderServiceImpl implements OrderService {
     }
 
     /**
-     * 订单支付
+     * Order payment
      *
      * @param ordersPaymentDTO
      * @return
      */
+    //TODO
     public OrderPaymentVO payment(OrdersPaymentDTO ordersPaymentDTO) throws Exception {
-        // 当前登录用户id
-        // Long userId = BaseContext.getCurrentId();
-        // User user = userMapper.getById(userId);
-
-        // 直接调用paySuccess方法，模拟支付成功
+        //Directly call paySuccess to simulate successful payment
         paySuccess(ordersPaymentDTO.getOrderNumber());
-
-        // 调用微信支付接口，生成预支付交易单
-        // JSONObject jsonObject = weChatPayUtil.pay(
-        // ordersPaymentDTO.getOrderNumber(), // 商户订单号
-        // new BigDecimal(0.01), // 支付金额，单位 元
-        // "苍穹外卖订单", // 商品描述
-        // user.getOpenid() // 微信用户的openid
-        // );
-
-        // if (jsonObject.getString("code") != null &&
-        // jsonObject.getString("code").equals("ORDERPAID")) {
-        // throw new OrderBusinessException("该订单已支付");
-        // }
-
-        // OrderPaymentVO vo = jsonObject.toJavaObject(OrderPaymentVO.class);
-        // vo.setPackageStr(jsonObject.getString("package"));
-
-        // return vo;
         return null;
     }
 
     /**
-     * 支付成功，修改订单状态
+     * Payment success, update order status
      *
      * @param outTradeNo
      */
     public void paySuccess(String outTradeNo) {
 
-        // 根据订单号查询订单
+        //look up order by order number
         Orders ordersDB = orderMapper.getByNumber(outTradeNo);
 
-        // 根据订单id更新订单的状态、支付方式、支付状态、结账时间
+        //update order's status, payment method, payment status and checkout time by order id
         Orders orders = Orders.builder()
                 .id(ordersDB.getId())
                 .status(Orders.TO_BE_CONFIRMED)
@@ -192,17 +158,98 @@ public class OrderServiceImpl implements OrderService {
 
         orderMapper.update(orders);
 
-        // 通过websocket通知商家
+        //Notify merchant via websocket
         Map<String, Object> map = new HashMap<>();
-        map.put("type", 1); // 1:来单通知
+        map.put("type", 1); // 1. new order notification
         map.put("orderId", ordersDB.getId());
-        map.put("content", "订单号: " + outTradeNo);
+        map.put("content", "Order number: " + outTradeNo);
         String msg = JSON.toJSONString(map);
         webSocketServer.sendToAllClient(msg);
     }
 
     /**
-     * 查询历史订单
+     * Create a Stripe Checkout Session for an order and return its hosted payment URL.
+     *
+     * @param ordersPaymentDTO
+     * @return
+     */
+    @Override
+    public StripeCheckoutVO createCheckoutSession(OrdersPaymentDTO ordersPaymentDTO) throws Exception {
+        String orderNumber = ordersPaymentDTO.getOrderNumber();
+        Orders ordersDB = orderMapper.getByNumber(orderNumber);
+        if (ordersDB == null) {
+            throw new OrderBusinessException(MessageConstant.ORDER_NOT_FOUND);
+        }
+
+        Stripe.apiKey = stripeProperties.getSecretKey();
+
+        //Stripe expects smallest currency unit (cents), order amount stored in dollars
+        long amountInCents = ordersDB.getAmount().multiply(new BigDecimal(100)).longValue();
+
+        SessionCreateParams params = SessionCreateParams.builder()
+                .setMode(SessionCreateParams.Mode.PAYMENT)
+                .setSuccessUrl(stripeProperties.getSuccessUrl() + "&orderNumber=" + orderNumber)
+                .setCancelUrl(stripeProperties.getCancelUrl())
+                .putMetadata("orderNumber", orderNumber)
+                .addLineItem(
+                        SessionCreateParams.LineItem.builder()
+                                .setQuantity(1L)
+                                .setPriceData(
+                                        SessionCreateParams.LineItem.PriceData.builder()
+                                                .setCurrency("usd")
+                                                .setUnitAmount(amountInCents)
+                                                .setProductData(
+                                                        SessionCreateParams.LineItem.PriceData.ProductData.builder()
+                                                                .setName("Order " + orderNumber)
+                                                                .build())
+                                                .build())
+                                .build())
+                .build();
+
+        Session session = Session.create(params);
+
+        return StripeCheckoutVO.builder()
+                .sessionId(session.getId())
+                .checkoutUrl(session.getUrl())
+                .build();
+    }
+
+    /**
+     * Confirm a Stripe Checkout Session and mark the order as paid if Stripe reports it paid.
+     * Safe to call more than once for the same session (e.g. on page refresh) - paySuccess
+     * only fires the first time the order is found unpaid.
+     *
+     * @param sessionId
+     * @return true if the order is (now, or already was) paid
+     */
+    @Override
+    public boolean confirmCheckoutSession(String sessionId) throws Exception {
+        Stripe.apiKey = stripeProperties.getSecretKey();
+
+        Session session = Session.retrieve(sessionId);
+        String orderNumber = session.getMetadata().get("orderNumber");
+        if (orderNumber == null) {
+            throw new OrderBusinessException(MessageConstant.STRIPE_SESSION_NOT_FOUND);
+        }
+
+        if (!"paid".equals(session.getPaymentStatus())) {
+            return false;
+        }
+
+        Orders ordersDB = orderMapper.getByNumber(orderNumber);
+        if (ordersDB == null) {
+            throw new OrderBusinessException(MessageConstant.ORDER_NOT_FOUND);
+        }
+
+        if (!Orders.PAID.equals(ordersDB.getPayStatus())) {
+            paySuccess(orderNumber);
+        }
+
+        return true;
+    }
+
+    /**
+     * Query order history
      *
      * @param page
      * @param pageSize
@@ -211,24 +258,24 @@ public class OrderServiceImpl implements OrderService {
      */
     @Override
     public PageResult<OrderVO> pageQueryByUser(int page, int pageSize, Integer status) {
-        // 设置分页
+        //Set up pagination
         PageHelper.startPage(page, pageSize);
 
         OrdersPageQueryDTO ordersPageQueryDTO = new OrdersPageQueryDTO();
         ordersPageQueryDTO.setUserId(BaseContext.getCurrentId());
         ordersPageQueryDTO.setStatus(status);
 
-        // 分页条件查询
+        //Paginated conditional query
         Page<Orders> pageOrders = orderMapper.pageQuery(ordersPageQueryDTO);
 
         List<OrderVO> list = new ArrayList<>();
 
-        // 查询出订单明细，并封装入OrderVO进行响应
+        //Query order details and wrap them into OrderVO for response
         if (pageOrders != null && pageOrders.getTotal() > 0) {
             for (Orders orders : pageOrders) {
-                Long orderId = orders.getId();// 订单id
+                Long orderId = orders.getId();//order id
 
-                // 查询订单明细
+                //Query order details
                 List<OrderDetail> orderDetails = orderDetailMapper.getByOrderId(orderId);
 
                 OrderVO orderVO = new OrderVO();
@@ -243,19 +290,19 @@ public class OrderServiceImpl implements OrderService {
     }
 
     /**
-     * 查询订单详情
+     * Query order details
      *
      * @param id
      * @return
      */
     public OrderVO details(Long id) {
-        // 根据id查询订单
+        //look up order by id
         Orders orders = orderMapper.getById(id);
 
-        // 查询该订单对应的菜品/套餐明细
+        //Query dish/combo details for this order
         List<OrderDetail> orderDetailList = orderDetailMapper.getByOrderId(orders.getId());
 
-        // 将该订单及其详情封装到OrderVO并返回
+        //Wrap order and details into an OrderVO and return it
         OrderVO orderVO = new OrderVO();
         BeanUtils.copyProperties(orders, orderVO);
         orderVO.setOrderDetailList(orderDetailList);
@@ -264,20 +311,21 @@ public class OrderServiceImpl implements OrderService {
     }
 
     /**
-     * 用户取消订单
+     * User cancels order
      *
      * @param id
      */
     public void userCancelById(Long id) throws Exception {
-        // 根据id查询订单
+        //look up order by id
         Orders ordersDB = orderMapper.getById(id);
 
-        // 校验订单是否存在
+        //Verify order exists
         if (ordersDB == null) {
             throw new OrderBusinessException(MessageConstant.ORDER_NOT_FOUND);
         }
 
-        // 订单状态 1待付款 2待接单 3已接单 4派送中 5已完成 6已取消
+        //Order status: 1=pending payment, 2=pending confirmation, 3=confirmed,
+        //              4=our for delivery, 5=completed, 6=cancelled
         if (ordersDB.getStatus() > 2) {
             throw new OrderBusinessException(MessageConstant.ORDER_STATUS_ERROR);
         }
@@ -285,20 +333,20 @@ public class OrderServiceImpl implements OrderService {
         Orders orders = new Orders();
         orders.setId(ordersDB.getId());
 
-        // 订单处于待接单状态下取消，需要进行退款
+        //If order is cancelled while pending confirmation, refund is required
         if (ordersDB.getStatus().equals(Orders.TO_BE_CONFIRMED)) {
-            // 调用微信支付退款接口
+            //Call Wechat Pay refund API
             weChatPayUtil.refund(
-                    ordersDB.getNumber(), // 商户订单号
-                    ordersDB.getNumber(), // 商户退款单号
-                    new BigDecimal(0.01), // 退款金额，单位 元
-                    new BigDecimal(0.01));// 原订单金额
+                    ordersDB.getNumber(), //merchant order number
+                    ordersDB.getNumber(), //merchant refund number
+                    new BigDecimal(0.01), //refund amount, in yuan
+                    new BigDecimal(0.01));//original order amount
 
-            // 支付状态修改为 退款
+            //Update payment status to "refunded"
             orders.setPayStatus(Orders.REFUND);
         }
 
-        // 更新订单状态、取消原因、取消时间
+        //Update order status, cancellation reason, and cancellation time
         orders.setStatus(Orders.CANCELLED);
         orders.setCancelReason("用户取消");
         orders.setCancelTime(LocalDateTime.now());
@@ -306,22 +354,22 @@ public class OrderServiceImpl implements OrderService {
     }
 
     /**
-     * 再来一单
+     * Reorder
      *
      * @param id
      */
     public void repetition(Long id) {
-        // 查询当前用户id
+        //Query current user's id
         Long userId = BaseContext.getCurrentId();
 
-        // 根据订单id查询当前订单详情
+        //Query current order's details by order id
         List<OrderDetail> orderDetailList = orderDetailMapper.getByOrderId(id);
 
-        // 将订单详情对象转换为购物车对象
+        //Convert order detail objects into shopping cart objects
         List<ShoppingCart> shoppingCartList = orderDetailList.stream().map(x -> {
             ShoppingCart shoppingCart = new ShoppingCart();
 
-            // 将原订单详情里面的菜品信息重新复制到购物车对象中
+            //Copy dish info from original order details back into cart obj
             BeanUtils.copyProperties(x, shoppingCart, "id");
             shoppingCart.setUserId(userId);
             shoppingCart.setCreateTime(LocalDateTime.now());
@@ -329,12 +377,12 @@ public class OrderServiceImpl implements OrderService {
             return shoppingCart;
         }).collect(Collectors.toList());
 
-        // 将购物车对象批量添加到数据库
+        //Batch-insert cart objects into database
         shoppingCartMapper.insertBatch(shoppingCartList);
     }
 
     /**
-     * 订单搜索
+     * Search orders
      *
      * @param ordersPageQueryDTO
      * @return
@@ -344,25 +392,25 @@ public class OrderServiceImpl implements OrderService {
 
         Page<Orders> page = orderMapper.pageQuery(ordersPageQueryDTO);
 
-        // 部分订单状态，需要额外返回订单菜品信息，将Orders转化为OrderVO
+        //Some order statuses require also returning order's dish info, convert Orders into OrderVO
         List<OrderVO> orderVOList = getOrderVOList(page);
 
         return new PageResult<>(page.getTotal(), orderVOList);
     }
 
     private List<OrderVO> getOrderVOList(Page<Orders> page) {
-        // 需要返回订单菜品信息，自定义OrderVO响应结果
+        //Need to return order's dish info, so build custom OrderVO response
         List<OrderVO> orderVOList = new ArrayList<>();
 
         List<Orders> ordersList = page.getResult();
         if (!CollectionUtils.isEmpty(ordersList)) {
             for (Orders orders : ordersList) {
-                // 将共同字段复制到OrderVO
+                //Copy shared fields onto OrderVO
                 OrderVO orderVO = new OrderVO();
                 BeanUtils.copyProperties(orders, orderVO);
                 String orderDishes = getOrderDishesStr(orders);
 
-                // 将订单菜品信息封装到orderVO中，并添加到orderVOList
+                //Attach order's dish info to orderVO and add it to orderVOList
                 orderVO.setOrderDishes(orderDishes);
                 orderVOList.add(orderVO);
             }
@@ -371,37 +419,37 @@ public class OrderServiceImpl implements OrderService {
     }
 
     /**
-     * 根据订单id获取菜品信息字符串
+     * Build dish-info string for an order by order id
      *
      * @param orders
      * @return
      */
     private String getOrderDishesStr(Orders orders) {
-        // 查询订单菜品详情信息（订单中的菜品和数量）
+        //Query order's dish details (dishes and quantities in the order)
         List<OrderDetail> orderDetailList = orderDetailMapper.getByOrderId(orders.getId());
 
-        // 将每一条订单菜品信息拼接为字符串（格式：宫保鸡丁*3；）
+        //Concatenate each dish's info into a string (format: Beef Bibimbap*3;)
         List<String> orderDishList = orderDetailList.stream().map(x -> {
             String orderDish = x.getName() + "*" + x.getNumber() + ";";
             return orderDish;
         }).collect(Collectors.toList());
 
-        // 将该订单对应的所有菜品信息拼接在一起
+        //Join dish info for this order together
         return String.join("", orderDishList);
     }
 
     /**
-     * 各个状态的订单数量统计
+     * Count orders by status
      *
      * @return
      */
     public OrderStatisticsVO statistics() {
-        // 根据状态，分别查询出待接单、待派送、派送中的订单数量
+        //Query counts of orders pending confirmation, pending delivery and out for delivery, by status
         Integer toBeConfirmed = orderMapper.countStatus(Orders.TO_BE_CONFIRMED);
         Integer confirmed = orderMapper.countStatus(Orders.CONFIRMED);
         Integer deliveryInProgress = orderMapper.countStatus(Orders.DELIVERY_IN_PROGRESS);
 
-        // 将查询出的数据封装到orderStatisticsVO中响应
+        //Wrap queried data into orderStatisticsVO for response
         OrderStatisticsVO orderStatisticsVO = new OrderStatisticsVO();
         orderStatisticsVO.setToBeConfirmed(toBeConfirmed);
         orderStatisticsVO.setConfirmed(confirmed);
@@ -410,7 +458,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     /**
-     * 接单
+     * Confirm an order
      *
      * @param ordersConfirmDTO
      */
@@ -424,32 +472,20 @@ public class OrderServiceImpl implements OrderService {
     }
 
     /**
-     * 拒单
+     * Reject an order
      *
      * @param ordersRejectionDTO
      */
     public void rejection(OrdersRejectionDTO ordersRejectionDTO) throws Exception {
-        // 根据id查询订单
+        //Look up order by id
         Orders ordersDB = orderMapper.getById(ordersRejectionDTO.getId());
 
-        // 订单只有存在且状态为2（待接单）才可以拒单
+        //Order can only be rejected if it exists and is in status 2 (pending confirmation)
         if (ordersDB == null || !ordersDB.getStatus().equals(Orders.TO_BE_CONFIRMED)) {
             throw new OrderBusinessException(MessageConstant.ORDER_STATUS_ERROR);
         }
 
-        // // 支付状态
-        // Integer payStatus = ordersDB.getPayStatus();
-        // if (payStatus == Orders.PAID) {
-        //     // 用户已支付，需要退款
-        //     String refund = weChatPayUtil.refund(
-        //             ordersDB.getNumber(),
-        //             ordersDB.getNumber(),
-        //             new BigDecimal(0.01),
-        //             new BigDecimal(0.01));
-        //     log.info("申请退款：{}", refund);
-        // }
-
-        // 拒单需要退款，根据订单id更新订单状态、拒单原因、取消时间
+        //Rejecting order requires refund; update order's status, rejection reason, and cancellation time by id
         Orders orders = new Orders();
         orders.setId(ordersDB.getId());
         orders.setStatus(Orders.CANCELLED);
@@ -460,27 +496,27 @@ public class OrderServiceImpl implements OrderService {
     }
 
     /**
-     * 取消订单
+     * Cancel an order
      *
      * @param ordersCancelDTO
      */
     public void cancel(OrdersCancelDTO ordersCancelDTO) throws Exception {
-        // 根据id查询订单
+        //Look up order by id
         Orders ordersDB = orderMapper.getById(ordersCancelDTO.getId());
 
-        // 支付状态
+        //Payment status
         Integer payStatus = ordersDB.getPayStatus();
-        if (payStatus == 1) {
-            // 用户已支付，需要退款
+        if (Orders.PAID.equals(payStatus)) {
+            //Already paid by user, refund required
             String refund = weChatPayUtil.refund(
                     ordersDB.getNumber(),
                     ordersDB.getNumber(),
                     new BigDecimal(0.01),
                     new BigDecimal(0.01));
-            log.info("申请退款：{}", refund);
+            log.info("Requesting refund: {}", refund);
         }
 
-        // 管理端取消订单需要退款，根据订单id更新订单状态、取消原因、取消时间
+        //Cancelling an order from admin side requires refund; update order status, cancellation reason, and cancellation time by id
         Orders orders = new Orders();
         orders.setId(ordersCancelDTO.getId());
         orders.setStatus(Orders.CANCELLED);
@@ -490,44 +526,44 @@ public class OrderServiceImpl implements OrderService {
     }
 
     /**
-     * 派送订单
+     * Dispatch order for delivery
      *
      * @param id
      */
     public void delivery(Long id) {
-        // 根据id查询订单
+        //Look up order by id
         Orders ordersDB = orderMapper.getById(id);
 
-        // 校验订单是否存在，并且状态为3
+        //Verify order exists and is in status 3
         if (ordersDB == null || !ordersDB.getStatus().equals(Orders.CONFIRMED)) {
             throw new OrderBusinessException(MessageConstant.ORDER_STATUS_ERROR);
         }
 
         Orders orders = new Orders();
         orders.setId(ordersDB.getId());
-        // 更新订单状态,状态转为派送中
+        //Update order status to "out for delivery"
         orders.setStatus(Orders.DELIVERY_IN_PROGRESS);
 
         orderMapper.update(orders);
     }
 
     /**
-     * 完成订单
+     * Complete and order
      *
      * @param id
      */
     public void complete(Long id) {
-        // 根据id查询订单
+        //Look up order by id
         Orders ordersDB = orderMapper.getById(id);
 
-        // 校验订单是否存在，并且状态为4
+        //Verify order exists and is in status 4
         if (ordersDB == null || !ordersDB.getStatus().equals(Orders.DELIVERY_IN_PROGRESS)) {
             throw new OrderBusinessException(MessageConstant.ORDER_STATUS_ERROR);
         }
 
         Orders orders = new Orders();
         orders.setId(ordersDB.getId());
-        // 更新订单状态,状态转为完成
+        //Update order status to "completed"
         orders.setStatus(Orders.COMPLETED);
         orders.setDeliveryTime(LocalDateTime.now());
 
@@ -535,22 +571,22 @@ public class OrderServiceImpl implements OrderService {
     }
 
     /**
-     * 用户催单
+     * User rushes order
      *
      * @param id
      */
     public void reminder(Long id) {
-        // 查询订单是否存在
+        //Check if order exists
         Orders orders = orderMapper.getById(id);
         if (orders == null) {
             throw new OrderBusinessException(MessageConstant.ORDER_NOT_FOUND);
         }
 
-        // 基于WebSocket实现催单
+        //Implement "rush order" reminder via websocket
         Map<String, Object> map = new HashMap<>();
-        map.put("type", 2);// 2代表用户催单
+        map.put("type", 2);// 2=user rushing order
         map.put("orderId", id);
-        map.put("content", "订单号：" + orders.getNumber());
+        map.put("content", "Order number: " + orders.getNumber());
         webSocketServer.sendToAllClient(JSON.toJSONString(map));
     }
 

@@ -2,6 +2,7 @@ package com.sky.controller.user;
 
 import com.sky.constant.JwtClaimsConstant;
 import com.sky.dto.UserLoginDTO;
+import com.sky.dto.WebUserLoginDTO;
 import com.sky.entity.User;
 import com.sky.properties.JwtProperties;
 import com.sky.result.Result;
@@ -21,7 +22,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @RestController
-@Api(tags = "C端用户相关接口")
+@Api(tags = "Customer-facing user API")
 @RequestMapping("/user/user")
 @Slf4j
 public class UserController {
@@ -33,15 +34,33 @@ public class UserController {
     private JwtProperties jwtProperties;
 
     @PostMapping("/login")
-    @ApiOperation("微信登录")
+    @ApiOperation("Wechat login")
     public Result<UserLoginVO> login(@RequestBody UserLoginDTO userLoginDTO) {
-        // 微信登陆
+        //Wechat login
         User user = userService.wxLogin(userLoginDTO);
 
-        // 为微信用户生成jwt
+        //Generate jwt for Wechat user
         Map<String, Object> cliams = new HashMap<>();
         cliams.put(JwtClaimsConstant.USER_ID, user.getId());
         String token = JwtUtil.createJWT(jwtProperties.getUserSecretKey(), jwtProperties.getUserTtl(), cliams);
+
+        UserLoginVO build = UserLoginVO.builder()
+                .id(user.getId())
+                .openid(user.getOpenid())
+                .token(token)
+                .build();
+
+        return Result.success(build);
+    }
+
+    @PostMapping("/webLogin")
+    @ApiOperation("Customer web app login (phone + name, no WeChat required)")
+    public Result<UserLoginVO> webLogin(@RequestBody WebUserLoginDTO webUserLoginDTO) {
+        User user = userService.webLogin(webUserLoginDTO);
+
+        Map<String, Object> claims = new HashMap<>();
+        claims.put(JwtClaimsConstant.USER_ID, user.getId());
+        String token = JwtUtil.createJWT(jwtProperties.getUserSecretKey(), jwtProperties.getUserTtl(), claims);
 
         UserLoginVO build = UserLoginVO.builder()
                 .id(user.getId())
