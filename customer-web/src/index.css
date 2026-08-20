@@ -151,6 +151,7 @@ textarea {
   overflow: hidden;
   display: flex;
   flex-direction: column;
+  cursor: pointer;
 }
 
 .item-card img {
@@ -277,6 +278,150 @@ textarea {
   margin: 0 20px;
   padding: 14px;
   font-size: 16px;
+}
+
+.cart-row-flavor {
+  color: var(--muted);
+  font-size: 12px;
+  margin-top: 2px;
+}
+
+/* Item detail modal */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  z-index: 100;
+}
+
+.modal-panel {
+  background: white;
+  width: 100%;
+  max-width: 480px;
+  max-height: 90vh;
+  overflow-y: auto;
+  border-radius: 16px 16px 0 0;
+  position: relative;
+}
+
+@media (min-width: 600px) {
+  .modal-overlay {
+    align-items: center;
+  }
+
+  .modal-panel {
+    border-radius: 16px;
+  }
+}
+
+.modal-close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.6);
+  color: white;
+  font-size: 18px;
+  line-height: 1;
+  z-index: 1;
+}
+
+.modal-image {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+  display: block;
+}
+
+.modal-body {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.modal-body h2 {
+  margin: 0;
+}
+
+.flavor-groups {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.flavor-group-name {
+  font-weight: 600;
+  font-size: 13px;
+  margin-bottom: 6px;
+}
+
+.flavor-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.flavor-chip {
+  background: white;
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 6px 14px;
+  font-weight: 500;
+  font-size: 13px;
+}
+
+.flavor-chip.selected {
+  background: var(--brand);
+  border-color: var(--brand);
+  color: white;
+}
+
+.setmeal-items h3 {
+  font-size: 14px;
+  margin-bottom: 8px;
+}
+
+.setmeal-item {
+  border-top: 1px solid var(--border);
+  padding: 12px 0;
+}
+
+.setmeal-item-header {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+}
+
+.setmeal-item-header img {
+  width: 56px;
+  height: 56px;
+  object-fit: cover;
+  border-radius: 8px;
+  flex-shrink: 0;
+}
+
+.setmeal-item-name {
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.setmeal-item .flavor-groups {
+  margin-top: 10px;
+}
+
+.modal-add-button {
+  width: 100%;
+  padding: 14px;
+  font-size: 16px;
+  margin-top: 8px;
 }
 
 /* Order history */

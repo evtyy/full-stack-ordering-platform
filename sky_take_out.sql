@@ -121,7 +121,7 @@ CREATE TABLE `order_detail`  (
   `order_id` bigint(20) NOT NULL COMMENT '订单id',
   `dish_id` bigint(20) NULL DEFAULT NULL COMMENT '菜品id',
   `setmeal_id` bigint(20) NULL DEFAULT NULL COMMENT '套餐id',
-  `dish_flavor` varchar(50) CHARACTER SET utf8 COLLATE utf8_bin NULL DEFAULT NULL COMMENT '口味',
+  `dish_flavor` varchar(500) CHARACTER SET utf8 COLLATE utf8_bin NULL DEFAULT NULL COMMENT 'flavor',
   `number` int(11) NOT NULL DEFAULT 1 COMMENT '数量',
   `amount` decimal(10, 2) NOT NULL COMMENT '金额',
   PRIMARY KEY (`id`) USING BTREE
@@ -204,7 +204,7 @@ CREATE TABLE `shopping_cart`  (
   `user_id` bigint(20) NOT NULL COMMENT '主键',
   `dish_id` bigint(20) NULL DEFAULT NULL COMMENT '菜品id',
   `setmeal_id` bigint(20) NULL DEFAULT NULL COMMENT '套餐id',
-  `dish_flavor` varchar(50) CHARACTER SET utf8 COLLATE utf8_bin NULL DEFAULT NULL COMMENT '口味',
+  `dish_flavor` varchar(500) CHARACTER SET utf8 COLLATE utf8_bin NULL DEFAULT NULL COMMENT 'flavor',
   `number` int(11) NOT NULL DEFAULT 1 COMMENT '数量',
   `amount` decimal(10, 2) NOT NULL COMMENT '金额',
   `create_time` datetime(0) NULL DEFAULT NULL COMMENT '创建时间',

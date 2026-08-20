@@ -1,11 +1,13 @@
 package com.sky.vo;
 
+import com.sky.entity.DishFlavor;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
+import java.util.List;
 
 @Data
 @Builder
@@ -13,15 +15,21 @@ import java.io.Serializable;
 @AllArgsConstructor
 public class DishItemVO implements Serializable {
 
-    //菜品名称
+    //Dish id
+    private Long dishId;
+
+    //Dish name
     private String name;
 
-    //份数
+    //Copies
     private Integer copies;
 
-    //菜品图片
+    //Dish image
     private String image;
 
-    //菜品描述
+    //Dish description
     private String description;
+
+    //Dish flavors
+    private List<DishFlavor> flavors;
 }

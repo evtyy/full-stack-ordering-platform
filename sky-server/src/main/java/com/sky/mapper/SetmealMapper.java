@@ -19,7 +19,7 @@ import java.util.Map;
 public interface SetmealMapper {
 
     /**
-     * 根据分类id查询套餐的数量
+     * Count how many combo meals belong in category
      *
      * @param id
      * @return
@@ -28,7 +28,7 @@ public interface SetmealMapper {
     Integer countByCategoryId(Long id);
 
     /**
-     * 根据id修改套餐
+     * Update combo meal by id
      *
      * @param setmeal
      */
@@ -36,7 +36,7 @@ public interface SetmealMapper {
     void update(Setmeal setmeal);
 
     /**
-     * 新增套餐
+     * Insert new combo meal
      *
      * @param setmeal
      */
@@ -44,14 +44,14 @@ public interface SetmealMapper {
     void insert(Setmeal setmeal);
 
     /**
-     * 分页查询
+     * Paginated query
      * @param setmealPageQueryDTO
      * @return
      */
     Page<SetmealVO> pageQuery(SetmealPageQueryDTO setmealPageQueryDTO);
 
     /**
-     * 根据id查询套餐
+     * Query a combo meal by id
      * @param id
      * @return
      */
@@ -59,38 +59,38 @@ public interface SetmealMapper {
     Setmeal getById(Long id);
 
     /**
-     * 根据id删除套餐
+     * Delete a combo meal by id
      * @param setmealId
      */
     @Delete("delete from setmeal where id = #{id}")
     void deleteById(Long setmealId);
 
     /**
-     * 根据id查询套餐和套餐菜品关系
+     * Query a combo meal with associated dishes, by id
      * @param id
      * @return
      */
     SetmealVO getByIdWithDish(Long id);
 
     /**
-     * 动态条件查询套餐
+     * Query combo meals by dynamic conditions
      * @param setmeal
      * @return
      */
     List<Setmeal> list(Setmeal setmeal);
 
     /**
-     * 根据套餐id查询菜品选项
+     * Query dish options for given combo meal, by combo meal id
      * @param setmealId
      * @return
      */
-    @Select("select sd.name, sd.copies, d.image, d.description " +
+    @Select("select sd.dish_id as dishId, sd.name, sd.copies, d.image, d.description " +
             "from setmeal_dish sd left join dish d on sd.dish_id = d.id " +
             "where sd.setmeal_id = #{setmealId}")
     List<DishItemVO> getDishItemBySetmealId(Long setmealId);
 
     /**
-     * 根据条件统计套餐数量
+     * Count combo meals matching dynamic conditions
      * @param map
      * @return
      */

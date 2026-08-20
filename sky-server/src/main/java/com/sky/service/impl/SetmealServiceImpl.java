@@ -6,6 +6,8 @@ import com.sky.dto.SetmealDTO;
 import com.sky.dto.SetmealPageQueryDTO;
 import com.sky.entity.Setmeal;
 import com.sky.entity.SetmealDish;
+import com.sky.entity.DishFlavor;
+import com.sky.mapper.DishFlavorMapper;
 import com.sky.mapper.DishMapper;
 import com.sky.mapper.SetmealDishMapper;
 import com.sky.mapper.SetmealMapper;
@@ -21,7 +23,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 /**
- * 套餐业务实现
+ * Combo meal business logic implementation
  */
 @Service
 @Slf4j
@@ -33,9 +35,11 @@ public class SetmealServiceImpl implements SetmealService {
     private SetmealDishMapper setmealDishMapper;
     @Autowired
     private DishMapper dishMapper;
+    @Autowired
+    private DishFlavorMapper dishFlavorMapper;
 
     /**
-     * 新增套餐，同时需要保存套餐和菜品的关联关系
+     * Add a new combo meal, save association b/w combo meal and its dishes
      *
      * @param setmealDTO
      */
@@ -49,12 +53,12 @@ public class SetmealServiceImpl implements SetmealService {
             setmealDish.setSetmealId(setmeal.getId());
         });
         setmealDishMapper.insertBatch(setmealDishes);
-        log.info("套餐和菜品的关联关系保存成功");
-        log.info("套餐保存成功");
+        log.info("Combo meal-dish associations saved successfully");
+        log.info("Combo meal saved successfully");
     }
 
     /**
-     * 分页查询
+     * Paginated query
      *
      * @param setmealPageQueryDTO
      * @return
@@ -63,12 +67,12 @@ public class SetmealServiceImpl implements SetmealService {
     public PageResult pageQuery(SetmealPageQueryDTO setmealPageQueryDTO) {
         PageHelper.startPage(setmealPageQueryDTO.getPage(), setmealPageQueryDTO.getPageSize());
         Page<SetmealVO> page = setmealMapper.pageQuery(setmealPageQueryDTO);
-        log.info("分页查询结果：{}", page);
+        log.info("Paginated query results: {}", page);
         return new PageResult(page.getTotal(), page.getResult());
     }
 
     /**
-     * 批量删除套餐
+     * Batch delete combo meals
      *
      * @param ids
      */
@@ -78,7 +82,7 @@ public class SetmealServiceImpl implements SetmealService {
     }
 
     /**
-     * 根据id查询套餐和关联的菜品数据
+     * Query a combo meal and its associated dish data, by id
      *
      * @param id
      * @return
@@ -89,7 +93,7 @@ public class SetmealServiceImpl implements SetmealService {
     }
 
     /**
-     * 修改套餐
+     * Update a combo meal
      *
      * @param setmealDTO
      */
@@ -101,7 +105,7 @@ public class SetmealServiceImpl implements SetmealService {
     }
 
     /**
-     * 套餐起售、停售
+     * Enable/disable a combo meal for sale
      *
      * @param status
      * @param id
@@ -112,7 +116,7 @@ public class SetmealServiceImpl implements SetmealService {
     }
 
     /**
-     * 条件查询
+     * Conditional query
      * @param setmeal
      * @return
      */
@@ -122,12 +126,17 @@ public class SetmealServiceImpl implements SetmealService {
     }
 
     /**
-     * 根据id查询菜品选项
+     * Query dish options by combo meal id
      * @param id
      * @return
      */
     public List<DishItemVO> getDishItemById(Long id) {
-        return setmealMapper.getDishItemBySetmealId(id);
+        List<DishItemVO> dishItemList = setmealMapper.getDishItemBySetmealId(id);
+        for (DishItemVO dishItemVO : dishItemList) {
+            List<DishFlavor> flavors = dishFlavorMapper.getByDishId(dishItemVO.getDishId());
+            dishItemVO.setFlavors(flavors);
+        }
+        return dishItemList;
     }
 
     @Override

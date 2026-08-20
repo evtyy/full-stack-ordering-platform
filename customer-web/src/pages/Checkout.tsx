@@ -95,7 +95,10 @@ export default function Checkout() {
         {cart.length === 0 && <p>Your cart is empty.</p>}
         {cart.map((item) => (
           <div className="cart-row" key={item.id}>
-            <span>{item.name}</span>
+            <div>
+              {item.name}
+              {item.dishFlavor && <div className="cart-row-flavor">{item.dishFlavor}</div>}
+            </div>
             <div className="qty-control">
               <button onClick={() => handleQtyChange(item, -1)}>-</button>
               <span>{item.number}</span>

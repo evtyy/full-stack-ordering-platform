@@ -41,10 +41,12 @@ export interface Setmeal {
 }
 
 export interface DishItemVO {
+  dishId: number;
   name: string;
   copies: number;
   image: string;
   description: string;
+  flavors: DishFlavor[];
 }
 
 export interface AddressBook {
