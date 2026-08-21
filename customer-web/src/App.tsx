@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import { Navigate, Route, Routes } from "react-router-dom";
 import { AuthProvider, useAuth } from "./AuthContext";
 import { ShopStatusProvider } from "./ShopStatusContext";
+import { ToastProvider } from "./ToastContext";
 import Login from "./pages/Login";
 import Menu from "./pages/Menu";
 import Checkout from "./pages/Checkout";
@@ -57,7 +58,9 @@ export default function App() {
   return (
     <ShopStatusProvider>
       <AuthProvider>
-        <AppRoutes />
+        <ToastProvider>
+          <AppRoutes />
+        </ToastProvider>
       </AuthProvider>
     </ShopStatusProvider>
   );

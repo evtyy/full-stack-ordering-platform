@@ -7,6 +7,7 @@ import CartBar from "../components/CartBar";
 import ItemDetailModal from "../components/ItemDetailModal";
 import Logo from "../components/Logo";
 import { useShopStatus } from "../ShopStatusContext";
+import { useToast } from "../ToastContext";
 
 const DISH_CATEGORY_TYPE = 1;
 
@@ -21,6 +22,7 @@ export default function Menu() {
   const [selectedItem, setSelectedItem] = useState<MenuItem | null>(null);
   const navigate = useNavigate();
   const { isShopOpen } = useShopStatus();
+  const { showToast } = useToast();
 
   useEffect(() => {
     getCategories().then((list) => {
@@ -52,8 +54,13 @@ export default function Menu() {
 
   async function handleAdd(item: MenuItem) {
     if (!isShopOpen) return;
-    await addToCart(item.isSetmeal ? { setmealId: item.id } : { dishId: item.id });
-    refreshCart();
+    try {
+      await addToCart(item.isSetmeal ? { setmealId: item.id } : { dishId: item.id });
+      refreshCart();
+      showToast(`${item.name} added to cart`);
+    } catch (error) {
+      showToast(error instanceof Error ? error.message : "Couldn't add item to cart", "error");
+    }
   }
 
   function needsCustomization(item: MenuItem) {

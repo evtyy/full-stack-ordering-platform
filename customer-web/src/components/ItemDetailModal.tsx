@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { getSetmealDishes } from "../api/menu";
 import { addToCart } from "../api/cart";
 import type { DishFlavor, DishItemVO, DishVO, Setmeal } from "../api/types";
+import { useToast } from "../ToastContext";
 
 type Item = (DishVO | Setmeal) & { isSetmeal: boolean };
 
@@ -62,6 +63,7 @@ export default function ItemDetailModal({
   const [setmealSelections, setSetmealSelections] = useState<Record<number, Record<string, string>>>({});
   const [loadingItems, setLoadingItems] = useState(item.isSetmeal);
   const [submitting, setSubmitting] = useState(false);
+  const { showToast } = useToast();
 
   const dishFlavors = useMemo(() => (!item.isSetmeal ? (item as DishVO).flavors ?? [] : []), [item]);
 
@@ -113,7 +115,10 @@ export default function ItemDetailModal({
           ? { setmealId: item.id, dishFlavor: buildDishFlavorText() }
           : { dishId: item.id, dishFlavor: buildDishFlavorText() }
       );
+      showToast(`${item.name} added to cart`);
       onAdded();
+    } catch (error) {
+      showToast(error instanceof Error ? error.message : "Couldn't add item to cart", "error");
     } finally {
       setSubmitting(false);
     }
