@@ -48,10 +48,12 @@ function FlavorPicker({
 
 export default function ItemDetailModal({
   item,
+  isShopOpen,
   onClose,
   onAdded,
 }: {
   item: Item;
+  isShopOpen: boolean;
   onClose: () => void;
   onAdded: () => void;
 }) {
@@ -84,7 +86,7 @@ export default function ItemDetailModal({
     [setmealItems, setmealSelections]
   );
 
-  const canAdd = item.isSetmeal ? !loadingItems && setmealComplete : dishComplete;
+  const canAdd = isShopOpen && (item.isSetmeal ? !loadingItems && setmealComplete : dishComplete);
 
   function buildDishFlavorText(): string | undefined {
     if (!item.isSetmeal) {
@@ -175,7 +177,7 @@ export default function ItemDetailModal({
           )}
 
           <button className="modal-add-button" disabled={!canAdd || submitting} onClick={handleAdd}>
-            {submitting ? "Adding..." : "Add to cart"}
+            {!isShopOpen ? "Shop closed" : submitting ? "Adding..." : "Add to cart"}
           </button>
         </div>
       </div>

@@ -6,6 +6,7 @@ import type { Category, DishVO, Setmeal, ShoppingCartItem } from "../api/types";
 import CartBar from "../components/CartBar";
 import ItemDetailModal from "../components/ItemDetailModal";
 import Logo from "../components/Logo";
+import { useShopStatus } from "../ShopStatusContext";
 
 const DISH_CATEGORY_TYPE = 1;
 
@@ -19,6 +20,7 @@ export default function Menu() {
   const [loading, setLoading] = useState(true);
   const [selectedItem, setSelectedItem] = useState<MenuItem | null>(null);
   const navigate = useNavigate();
+  const { isShopOpen } = useShopStatus();
 
   useEffect(() => {
     getCategories().then((list) => {
@@ -49,6 +51,7 @@ export default function Menu() {
   }
 
   async function handleAdd(item: MenuItem) {
+    if (!isShopOpen) return;
     await addToCart(item.isSetmeal ? { setmealId: item.id } : { dishId: item.id });
     refreshCart();
   }
@@ -58,6 +61,7 @@ export default function Menu() {
   }
 
   function handleCardAction(item: MenuItem) {
+    if (!isShopOpen) return;
     if (needsCustomization(item)) {
       setSelectedItem(item);
     } else {
@@ -73,6 +77,10 @@ export default function Menu() {
           My orders
         </button>
       </header>
+
+      {!isShopOpen && (
+        <div className="shop-closed-banner">We're currently closed and not accepting orders right now.</div>
+      )}
 
       <div className="menu-body">
         <nav className="category-tabs">
@@ -103,6 +111,7 @@ export default function Menu() {
                 <div className="item-card-footer">
                   <span className="price">${item.price.toFixed(2)}</span>
                   <button
+                    disabled={!isShopOpen}
                     onClick={(event) => {
                       event.stopPropagation();
                       handleCardAction(item);
@@ -117,11 +126,12 @@ export default function Menu() {
         </div>
       </div>
 
-      <CartBar cart={cart} onCheckout={() => navigate("/checkout")} />
+      <CartBar cart={cart} isShopOpen={isShopOpen} onCheckout={() => navigate("/checkout")} />
 
       {selectedItem && (
         <ItemDetailModal
           item={selectedItem}
+          isShopOpen={isShopOpen}
           onClose={() => setSelectedItem(null)}
           onAdded={() => {
             refreshCart();

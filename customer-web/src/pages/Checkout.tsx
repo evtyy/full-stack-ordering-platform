@@ -4,8 +4,10 @@ import { addAddress, listAddresses } from "../api/address";
 import { addToCart, getCart, subFromCart } from "../api/cart";
 import { createCheckoutSession, submitOrder } from "../api/order";
 import type { AddressBook, ShoppingCartItem } from "../api/types";
+import { useShopStatus } from "../ShopStatusContext";
 
 export default function Checkout() {
+  const { isShopOpen } = useShopStatus();
   const [cart, setCart] = useState<ShoppingCartItem[]>([]);
   const [addresses, setAddresses] = useState<AddressBook[]>([]);
   const [selectedAddressId, setSelectedAddressId] = useState<number | null>(null);
@@ -56,6 +58,10 @@ export default function Checkout() {
   const total = cart.reduce((sum, item) => sum + item.number * item.amount, 0);
 
   async function handlePlaceOrder() {
+    if (!isShopOpen) {
+      setError("We're currently closed and not accepting orders right now.");
+      return;
+    }
     if (!selectedAddressId) {
       setError("Please choose a delivery address");
       return;
@@ -143,10 +149,18 @@ export default function Checkout() {
         <textarea value={remark} onChange={(e) => setRemark(e.target.value)} placeholder="Optional" />
       </section>
 
+      {!isShopOpen && (
+        <p className="shop-closed-banner">We're currently closed and not accepting orders right now.</p>
+      )}
+
       {error && <p className="auth-error">{error}</p>}
 
-      <button className="place-order-button" disabled={placing || cart.length === 0} onClick={handlePlaceOrder}>
-        {placing ? "Redirecting to payment..." : `Pay $${total.toFixed(2)} with card`}
+      <button
+        className="place-order-button"
+        disabled={!isShopOpen || placing || cart.length === 0}
+        onClick={handlePlaceOrder}
+      >
+        {!isShopOpen ? "Shop closed" : placing ? "Redirecting to payment..." : `Pay $${total.toFixed(2)} with card`}
       </button>
     </div>
   );
