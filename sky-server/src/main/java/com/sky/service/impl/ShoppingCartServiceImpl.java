@@ -38,10 +38,11 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
         // 判断商品是否已经存在
         ShoppingCart shoppingCart = new ShoppingCart();
         BeanUtils.copyProperties(shoppingCartDTO, shoppingCart);
-        List<ShoppingCart> list = shoppingCartMapper.list(shoppingCart);
 
         Long userId = BaseContext.getCurrentId();
         shoppingCart.setUserId(userId);
+
+        List<ShoppingCart> list = shoppingCartMapper.list(shoppingCart);
 
         // 如果已经存在，将数量+1
         if (list != null && !list.isEmpty()) {
@@ -100,6 +101,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     public void subShoppingCart(ShoppingCartDTO shoppingCartDTO) {
         ShoppingCart shop = new ShoppingCart();
         BeanUtils.copyProperties(shoppingCartDTO, shop);
+        shop.setUserId(BaseContext.getCurrentId());
         List<ShoppingCart> list = shoppingCartMapper.list(shop);
         if (list != null && !list.isEmpty()) {
             ShoppingCart cart = list.get(0);
