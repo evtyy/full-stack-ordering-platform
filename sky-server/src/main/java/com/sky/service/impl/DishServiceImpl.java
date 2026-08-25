@@ -1,5 +1,6 @@
 package com.sky.service.impl;
 
+import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.sky.constant.MessageConstant;
 import com.sky.constant.StatusConstant;
@@ -74,16 +75,9 @@ public class DishServiceImpl implements DishService {
     public PageResult pageQuery(DishPageQueryDTO dishPageQueryDTO) {
         PageHelper.startPage(dishPageQueryDTO.getPage(), dishPageQueryDTO.getPageSize());
 
-//        Page<DishVO> page = dishMapper.pageQuery(dishPageQueryDTO);
-//        return new PageResult(page.getTotal(),page.getResult());
+        Page<DishVO> page = dishMapper.pageQuery(dishPageQueryDTO);
 
-        List<DishVO> dishVOList = dishMapper.pageQuery(dishPageQueryDTO);
-
-        PageResult pageResult = new PageResult();
-        pageResult.setTotal(dishVOList.size());
-        pageResult.setRecords(dishVOList);
-
-        return pageResult;
+        return new PageResult(page.getTotal(), page.getResult());
     }
 
     /**

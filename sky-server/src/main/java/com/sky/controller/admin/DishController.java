@@ -59,7 +59,6 @@ public class DishController {
     @ApiOperation("Paginated dish query")
     public Result<PageResult> page(DishPageQueryDTO dishPageQueryDTO) {
         log.info("Paginated dish query: {}", dishPageQueryDTO);
-        dishPageQueryDTO.setPageSize(100000);
         return Result.success(dishService.pageQuery(dishPageQueryDTO));
     }
 
