@@ -12,43 +12,43 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/user/shoppingCart")
 @Slf4j
-@Api(tags = "C端-购物车接口")
-public class ShoppingCardController {
+@Api(tags = "Client-side shopping cart interface")
+public class ShoppingCartController {
 
     @Autowired
     private ShoppingCartService shoppingCartService;
 
     @PostMapping("/add")
-    @ApiOperation("添加购物车")
+    @ApiOperation("Add to shopping cart")
     public Result add(@RequestBody ShoppingCartDTO shoppingCartDTO) {
-        log.info("添加购物车:{}", shoppingCartDTO);
+        log.info("Add to shopping cart, item info: {}", shoppingCartDTO);
         shoppingCartService.addShoppingCart(shoppingCartDTO);
         return Result.success();
     }
 
     @GetMapping("list")
-    @ApiOperation("查看购物车")
+    @ApiOperation("View shopping cart")
     public Result list() {
         return Result.success(shoppingCartService.showShoppingCart());
     }
 
     @DeleteMapping("/delete")
-    @ApiOperation("清空购物车")
+    @ApiOperation("Clear shopping cart")
     public Result delete() {
         shoppingCartService.cleanShoppingCart();
         return Result.success();
     }
 
     @PostMapping("sub")
-    @ApiOperation("购物车-删除商品")
+    @ApiOperation("Shopping cart - remove item")
     public Result sub(@RequestBody ShoppingCartDTO shoppingCartDTO) {
-        log.info("购物车-删除商品:{}", shoppingCartDTO);
+        log.info("Shopping cart - remove item: {}", shoppingCartDTO);
         shoppingCartService.subShoppingCart(shoppingCartDTO);
         return Result.success();
     }
 
     /**
-     * 清空购物车
+     * Clear shopping cart
      *
      * @return
      */

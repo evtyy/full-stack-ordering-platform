@@ -29,13 +29,13 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     private SetmealMapper setmealMapper;
 
     /**
-     * 添加购物车
+     * Add to shopping cart
      *
      * @param shoppingCartDTO
      */
     @Override
     public void addShoppingCart(ShoppingCartDTO shoppingCartDTO) {
-        // 判断商品是否已经存在
+        //determine whether item already exists
         ShoppingCart shoppingCart = new ShoppingCart();
         BeanUtils.copyProperties(shoppingCartDTO, shoppingCart);
 
@@ -44,26 +44,27 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
 
         List<ShoppingCart> list = shoppingCartMapper.list(shoppingCart);
 
-        // 如果已经存在，将数量+1
+        //if already exists, quantity +1
         if (list != null && !list.isEmpty()) {
             ShoppingCart cart = list.get(0);
             cart.setNumber(cart.getNumber() + 1);
             shoppingCartMapper.updateNumberById(cart);
         } else {
-            // 如果不存在，存入购物车中
-            // 判断是菜品
+            // if it doesn't exist, add it to the shopping cart
+            // determine whether it's a dish
             Long dishId = shoppingCartDTO.getDishId();
             shoppingCart.setNumber(1);
+            shoppingCart.setCreateTime(LocalDateTime.now());
+
             if (dishId != null) {
-                // 添加菜品
+                // add dish
                 Dish dish = dishMapper.getById(dishId);
                 shoppingCart.setName(dish.getName());
                 shoppingCart.setImage(dish.getImage());
                 shoppingCart.setAmount(dish.getPrice());
                 shoppingCart.setDishFlavor(shoppingCartDTO.getDishFlavor());
-                shoppingCart.setCreateTime(LocalDateTime.now());
             }
-            // 还是套餐
+            // otherwise it's a setmeal
             else {
                 Setmeal setmeal = setmealMapper.getById(shoppingCartDTO.getSetmealId());
                 shoppingCart.setName(setmeal.getName());
@@ -75,7 +76,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     }
 
     /**
-     * 查看购物车
+     * View shopping cart
      *
      * @return
      */
@@ -85,7 +86,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     }
 
     /**
-     * 清空购物车
+     * Clear shopping cart
      */
     @Override
     public void cleanShoppingCart() {
@@ -93,7 +94,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     }
 
     /**
-     * 删除购物车中一个商品
+     * Remove one item from the shopping cart
      *
      * @param shoppingCartDTO
      */

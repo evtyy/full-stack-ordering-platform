@@ -12,21 +12,21 @@ import java.util.List;
 public interface ShoppingCartMapper {
 
     /**
-     * 动态条件查询
+     * Dynamic conditional query
      * @param shoppingCart
      * @return
      */
     List<ShoppingCart> list(ShoppingCart shoppingCart);
 
     /**
-     * 根据id修改商品数量
+     * Update item quantity by id
      * @param shoppingCart
      */
     @Update("update shopping_cart set number = #{number} where id = #{id}")
     void updateNumberById(ShoppingCart shoppingCart);
 
     /**
-     * 插入购物车数据
+     * Insert shopping cart data
      * @param shoppingCart
      */
     @Insert("insert into shopping_cart (name, user_id, dish_id, setmeal_id, dish_flavor, number, amount, image, create_time) " +
@@ -34,21 +34,21 @@ public interface ShoppingCartMapper {
     void insert(ShoppingCart shoppingCart);
 
     /**
-     * 根据用户id删除购物车数据
+     * Delete shopping cart data by user id
      * @param userId
      */
     @Delete("delete from shopping_cart where user_id = #{userId}")
     void deleteByUserId(Long userId);
 
     /**
-     * 根据id删除购物车数据
+     * Delete shopping cart data by id
      * @param id
      */
     @Delete("delete from shopping_cart where id = #{id}")
     void deleteById(Long id);
 
     /**
-     * 批量插入购物车数据
+     * Batch insert shopping cart data
      *
      * @param shoppingCartList
      */
