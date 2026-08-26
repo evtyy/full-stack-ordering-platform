@@ -91,6 +91,19 @@ public class OrderController {
     }
 
     /**
+     * User cancel order
+     *
+     * @param id
+     * @return
+     */
+    @PutMapping("/cancel/{id}")
+    @ApiOperation("User cancel order")
+    public Result<String> cancel(@PathVariable Long id) throws Exception {
+        orderService.userCancelById(id);
+        return Result.success();
+    }
+
+    /**
      * Reorder
      *
      * @param id

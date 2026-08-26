@@ -31,3 +31,7 @@ export function getOrderDetail(id: number) {
 export function getHistoryOrders(page: number, pageSize: number, status?: number) {
   return api.get<PageResult<OrderVO>>("/user/order/historyOrders", { page, pageSize, status });
 }
+
+export function cancelOrder(id: number) {
+  return api.put<string>(`/user/order/cancel/${id}`);
+}

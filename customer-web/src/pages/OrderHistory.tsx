@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { getHistoryOrders } from "../api/order";
+import { cancelOrder, getHistoryOrders } from "../api/order";
 import type { OrderVO } from "../api/types";
 
 const STATUS_LABELS: Record<number, string> = {
@@ -12,9 +12,14 @@ const STATUS_LABELS: Record<number, string> = {
   6: "Cancelled",
 };
 
+// Matches the order-status check in OrderServiceImpl.userCancelById (statuses > 2 can't be cancelled)
+const CANCELLABLE_STATUSES = new Set([1, 2]);
+
 export default function OrderHistory() {
   const [orders, setOrders] = useState<OrderVO[]>([]);
   const [loading, setLoading] = useState(true);
+  const [confirmingId, setConfirmingId] = useState<number | null>(null);
+  const [cancellingId, setCancellingId] = useState<number | null>(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -22,6 +27,19 @@ export default function OrderHistory() {
       .then((page) => setOrders(page.records))
       .finally(() => setLoading(false));
   }, []);
+
+  async function handleCancel(id: number) {
+    setCancellingId(id);
+    try {
+      await cancelOrder(id);
+      setOrders((prev) => prev.map((o) => (o.id === id ? { ...o, status: 6 } : o)));
+    } catch (err) {
+      alert(err instanceof Error ? err.message : "Failed to cancel order");
+    } finally {
+      setCancellingId(null);
+      setConfirmingId(null);
+    }
+  }
 
   return (
     <div className="checkout-page">
@@ -41,7 +59,31 @@ export default function OrderHistory() {
             <strong>#{order.number}</strong>
             <p>{STATUS_LABELS[order.status] ?? "Unknown"}</p>
           </div>
-          <span>${order.amount.toFixed(2)}</span>
+
+          {confirmingId === order.id ? (
+            <span>
+              Cancel this order?{" "}
+              <button
+                className="link-button"
+                disabled={cancellingId === order.id}
+                onClick={() => handleCancel(order.id)}
+              >
+                {cancellingId === order.id ? "Cancelling..." : "Yes"}
+              </button>{" "}
+              <button className="link-button" onClick={() => setConfirmingId(null)}>
+                No
+              </button>
+            </span>
+          ) : (
+            <>
+              <span>${order.amount.toFixed(2)}</span>
+              {CANCELLABLE_STATUSES.has(order.status) && (
+                <button className="link-button" onClick={() => setConfirmingId(order.id)}>
+                  Cancel order
+                </button>
+              )}
+            </>
+          )}
         </div>
       ))}
     </div>
