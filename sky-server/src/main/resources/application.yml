@@ -49,9 +49,6 @@ sky:
     access-key: ${sky.alioss.access-key}
     secret-key: ${sky.alioss.secret-key}
     bucket-name: ${sky.alioss.bucket-name}
-  wechat:
-    appid: ${sky.wechat.app-id}
-    secret: ${sky.wechat.app-secret}
   stripe:
     secret-key: ${sky.stripe.secret-key}
     success-url: ${sky.stripe.success-url}

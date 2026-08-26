@@ -31,7 +31,7 @@ public class OrdersDTO implements Serializable {
     //结账时间
     private LocalDateTime checkoutTime;
 
-    //支付方式 1微信，2支付宝
+    //支付方式（当前未使用，仅通过 Stripe 支付）
     private Integer payMethod;
 
     //实收金额

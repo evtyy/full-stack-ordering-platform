@@ -10,14 +10,6 @@ import java.util.Map;
 public interface UserMapper {
 
     /**
-     * Find a user by openid
-     * @param openid
-     * @return
-     */
-    @Select("select * from user where openid = #{openid}")
-    User getByOpenid(String openid);
-
-    /**
      * Find a user by phone number
      * @param phone
      * @return

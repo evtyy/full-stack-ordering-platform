@@ -59,8 +59,7 @@ public class Orders implements Serializable {
     //Checkout time
     private LocalDateTime checkoutTime;
 
-    //Payment method: 1=Wechat，2=Alipay
-    //TODO
+    //Payment method (currently unused — Stripe is the only payment integration)
     private Integer payMethod;
 
     //Payment status: 0=pending payment, 1=paid, 2=refunded

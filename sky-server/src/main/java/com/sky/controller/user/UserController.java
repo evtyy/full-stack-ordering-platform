@@ -1,7 +1,6 @@
 package com.sky.controller.user;
 
 import com.sky.constant.JwtClaimsConstant;
-import com.sky.dto.UserLoginDTO;
 import com.sky.dto.WebUserLoginDTO;
 import com.sky.entity.User;
 import com.sky.properties.JwtProperties;
@@ -33,28 +32,8 @@ public class UserController {
     @Autowired
     private JwtProperties jwtProperties;
 
-    @PostMapping("/login")
-    @ApiOperation("Wechat login")
-    public Result<UserLoginVO> login(@RequestBody UserLoginDTO userLoginDTO) {
-        //Wechat login
-        User user = userService.wxLogin(userLoginDTO);
-
-        //Generate jwt for Wechat user
-        Map<String, Object> cliams = new HashMap<>();
-        cliams.put(JwtClaimsConstant.USER_ID, user.getId());
-        String token = JwtUtil.createJWT(jwtProperties.getUserSecretKey(), jwtProperties.getUserTtl(), cliams);
-
-        UserLoginVO build = UserLoginVO.builder()
-                .id(user.getId())
-                .openid(user.getOpenid())
-                .token(token)
-                .build();
-
-        return Result.success(build);
-    }
-
     @PostMapping("/webLogin")
-    @ApiOperation("Customer web app login (phone + name, no WeChat required)")
+    @ApiOperation("Customer web app login (phone + name)")
     public Result<UserLoginVO> webLogin(@RequestBody WebUserLoginDTO webUserLoginDTO) {
         User user = userService.webLogin(webUserLoginDTO);
 

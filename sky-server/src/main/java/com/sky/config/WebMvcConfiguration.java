@@ -50,25 +50,18 @@ public class WebMvcConfiguration extends WebMvcConfigurationSupport {
 
         registry.addInterceptor(jwtTokenUserInterceptor)
                 .addPathPatterns("/user/**")
-                .excludePathPatterns("/user/user/login")
                 .excludePathPatterns("/user/user/webLogin")
                 .excludePathPatterns("/user/shop/status");
     }
 
     /**
-     * Allows the customer-web dev server (and the Stripe payment-status header)
-     * to call the /user and /notify APIs from a different origin.
+     * Allows the customer-web dev server to call the /user APIs from a different origin.
      *
      * @param registry
      */
     @Override
     protected void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/user/**")
-                .allowedOriginPatterns("http://localhost:*")
-                .allowedMethods("GET", "POST", "PUT", "DELETE")
-                .allowedHeaders("*")
-                .allowCredentials(true);
-        registry.addMapping("/notify/**")
                 .allowedOriginPatterns("http://localhost:*")
                 .allowedMethods("GET", "POST", "PUT", "DELETE")
                 .allowedHeaders("*")

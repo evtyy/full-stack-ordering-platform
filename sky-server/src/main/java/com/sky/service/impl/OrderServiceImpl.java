@@ -20,7 +20,6 @@ import com.sky.mapper.ShoppingCartMapper;
 import com.sky.properties.StripeProperties;
 import com.sky.result.PageResult;
 import com.sky.service.OrderService;
-import com.sky.utils.WeChatPayUtil;
 import com.sky.vo.*;
 import com.sky.websocket.WebSocketServer;
 import com.stripe.Stripe;
@@ -53,9 +52,6 @@ public class OrderServiceImpl implements OrderService {
 
     @Autowired
     private ShoppingCartMapper shoppingCartMapper;
-
-    @Autowired
-    private WeChatPayUtil weChatPayUtil;
 
     @Autowired
     private StripeProperties stripeProperties;
@@ -334,14 +330,8 @@ public class OrderServiceImpl implements OrderService {
         orders.setId(ordersDB.getId());
 
         //If order is cancelled while pending confirmation, refund is required
+        //TODO: wire up a real Stripe refund here (WeChat Pay refund removed)
         if (ordersDB.getStatus().equals(Orders.TO_BE_CONFIRMED)) {
-            //Call Wechat Pay refund API
-            weChatPayUtil.refund(
-                    ordersDB.getNumber(), //merchant order number
-                    ordersDB.getNumber(), //merchant refund number
-                    new BigDecimal(0.01), //refund amount, in yuan
-                    new BigDecimal(0.01));//original order amount
-
             //Update payment status to "refunded"
             orders.setPayStatus(Orders.REFUND);
         }
@@ -504,17 +494,7 @@ public class OrderServiceImpl implements OrderService {
         //Look up order by id
         Orders ordersDB = orderMapper.getById(ordersCancelDTO.getId());
 
-        //Payment status
-        Integer payStatus = ordersDB.getPayStatus();
-        if (Orders.PAID.equals(payStatus)) {
-            //Already paid by user, refund required
-            String refund = weChatPayUtil.refund(
-                    ordersDB.getNumber(),
-                    ordersDB.getNumber(),
-                    new BigDecimal(0.01),
-                    new BigDecimal(0.01));
-            log.info("Requesting refund: {}", refund);
-        }
+        //TODO: wire up a real Stripe refund here when payStatus is PAID (WeChat Pay refund removed)
 
         //Cancelling an order from admin side requires refund; update order status, cancellation reason, and cancellation time by id
         Orders orders = new Orders();
