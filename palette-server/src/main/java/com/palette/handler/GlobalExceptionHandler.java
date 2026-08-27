@@ -10,20 +10,20 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import java.sql.SQLIntegrityConstraintViolationException;
 
 /**
- * 全局异常处理器，处理项目中抛出的业务异常
+ * Global exception handler, handles business exceptions thrown in the project
  */
 @RestControllerAdvice
 @Slf4j
 public class GlobalExceptionHandler {
 
     /**
-     * 捕获业务异常
+     * Catch business exceptions
      * @param ex
      * @return
      */
     @ExceptionHandler
     public Result exceptionHandler(BaseException ex){
-        log.error("异常信息：{}", ex.getMessage());
+        log.error("Exception info: {}", ex.getMessage());
         return Result.error(ex.getMessage());
     }
 
@@ -34,13 +34,13 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler
     public Result exceptionHandler(SQLIntegrityConstraintViolationException ex) {
-        // example exception msg if input zhangsan again:
-        // Duplicate entry 'zhangsan' for key 'employee.idx_username
+        // example exception msg if input tom again:
+        // Duplicate entry 'tom' for key 'employee.idx_username
         if (ex.getMessage().contains("Duplicate entry")) {
             String[] split = ex.getMessage().split(" ");
-            // zhangsan should be after 2nd " "
+            // tom should be after 2nd " "
             // split is a list of Strings, split[index = 2]
-            String msg = split[2] + MessageConstant.ALREADY_EXISTS; // zhangsan 账号已存在
+            String msg = split[2] + MessageConstant.ALREADY_EXISTS; // e.g. "tom account already exists"
             return Result.error(msg);
         } else {
             return Result.error(MessageConstant.UNKNOWN_ERROR);

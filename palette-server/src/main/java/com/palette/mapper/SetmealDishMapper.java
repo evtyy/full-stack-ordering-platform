@@ -9,7 +9,7 @@ import java.util.List;
 @Mapper
 public interface SetmealDishMapper {
     /**
-     * 根据菜品id查询对应的套餐id
+     * Query the corresponding combo meal ids by dish id
      *
      * @param dishIds
      * @return
@@ -18,14 +18,14 @@ public interface SetmealDishMapper {
     List<Long> getSetmealIdsByDishIds(List<Long> dishIds);
 
     /**
-     * 批量保存套餐和菜品的关联关系
+     * Batch save the association between combo meals and dishes
      *
      * @param setmealDishes
      */
     void insertBatch(List<SetmealDish> setmealDishes);
 
     /**
-     * 根据套餐id删除套餐和菜品的关联关系
+     * Delete the association between a combo meal and dishes by combo meal id
      *
      * @param setmealId
      */

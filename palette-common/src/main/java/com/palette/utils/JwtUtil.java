@@ -11,47 +11,47 @@ import java.util.Map;
 
 public class JwtUtil {
     /**
-     * 生成jwt
-     * 使用Hs256算法, 私匙使用固定秘钥
+     * Generate a jwt
+     * Uses the Hs256 algorithm, with a fixed secret key
      *
-     * @param secretKey jwt秘钥
-     * @param ttlMillis jwt过期时间(毫秒)
-     * @param claims    设置的信息
+     * @param secretKey jwt secret key
+     * @param ttlMillis jwt expiration time (milliseconds)
+     * @param claims    information to set
      * @return
      */
     public static String createJWT(String secretKey, long ttlMillis, Map<String, Object> claims) {
-        // 指定签名的时候使用的签名算法，也就是header那部分
+        // Specify the signature algorithm used when signing, i.e. the header part
         SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS256;
 
-        // 生成JWT的时间
+        // Time at which the JWT is generated
         long expMillis = System.currentTimeMillis() + ttlMillis * 1000000;
         Date exp = new Date(expMillis);
 
-        // 设置jwt的body
+        // Set the jwt body
         JwtBuilder builder = Jwts.builder()
-                // 如果有私有声明，一定要先设置这个自己创建的私有的声明，这个是给builder的claim赋值，一旦写在标准的声明赋值之后，就是覆盖了那些标准的声明的
+                // If there are private claims, they must be set before the standard claims, since this assigns claims to the builder and setting them after the standard claims would overwrite them
                 .setClaims(claims)
-                // 设置签名使用的签名算法和签名使用的秘钥
+                // Set the signature algorithm and secret key used for signing
                 .signWith(signatureAlgorithm, secretKey.getBytes(StandardCharsets.UTF_8))
-                // 设置过期时间
+                // Set the expiration time
                 .setExpiration(exp);
 
         return builder.compact();
     }
 
     /**
-     * Token解密
+     * Token decryption
      *
-     * @param secretKey jwt秘钥 此秘钥一定要保留好在服务端, 不能暴露出去, 否则sign就可以被伪造, 如果对接多个客户端建议改造成多个
-     * @param token     加密后的token
+     * @param secretKey jwt secret key. This key must be kept safe on the server side and never exposed, otherwise the signature can be forged. If integrating with multiple clients, consider using multiple keys
+     * @param token     the encrypted token
      * @return
      */
     public static Claims parseJWT(String secretKey, String token) {
-        // 得到DefaultJwtParser
+        // Get the DefaultJwtParser
         Claims claims = Jwts.parser()
-                // 设置签名的秘钥
+                // Set the signing key
                 .setSigningKey(secretKey.getBytes(StandardCharsets.UTF_8))
-                // 设置需要解析的jwt
+                // Set the jwt to be parsed
                 .parseClaimsJws(token).getBody();
         return claims;
     }

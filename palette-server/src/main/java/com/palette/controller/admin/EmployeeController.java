@@ -21,7 +21,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * 员工管理
+ * Employee management
  */
 @RestController
 @RequestMapping("/admin/employee")
@@ -35,7 +35,7 @@ public class EmployeeController {
     private JwtProperties jwtProperties;
 
     /**
-     * 登录
+     * Login
      *
      * @param employeeLoginDTO
      * @return
@@ -43,11 +43,11 @@ public class EmployeeController {
     @PostMapping("/login")
     @ApiOperation("Employee login")
     public Result<EmployeeLoginVO> login(@RequestBody EmployeeLoginDTO employeeLoginDTO) {
-        log.info("员工登录：{}", employeeLoginDTO);
+        log.info("Employee login: {}", employeeLoginDTO);
 
         Employee employee = employeeService.login(employeeLoginDTO);
 
-        //登录成功后，生成jwt令牌
+        //After successful login, generate a JWT token
         Map<String, Object> claims = new HashMap<>();
         claims.put(JwtClaimsConstant.EMP_ID, employee.getId());
         String token = JwtUtil.createJWT(
@@ -73,20 +73,20 @@ public class EmployeeController {
     @PostMapping
     @ApiOperation(value = "New Employee")
     public Result save(@RequestBody EmployeeDTO employeeDTO) {
-        log.info("新增员工: {}", employeeDTO);
+        log.info("New employee: {}", employeeDTO);
         employeeService.save(employeeDTO);
         return Result.success();
     }
 
     /**
-     * 员工分页查询
+     * Paginated employee query
      * @param employeePageQueryDTO
      * @return
      */
     @GetMapping("/page")
-    @ApiOperation(value = "员工分页查询")
+    @ApiOperation(value = "Paginated employee query")
     public Result<PageResult> page(EmployeePageQueryDTO employeePageQueryDTO) {
-        log.info("员工分页查询,参数为：{}", employeePageQueryDTO);
+        log.info("Paginated employee query, params: {}", employeePageQueryDTO);
         PageResult result = employeeService.pageQuery(employeePageQueryDTO);
         return Result.success(result);
     }
@@ -132,7 +132,7 @@ public class EmployeeController {
     }
 
     /**
-     * 退出
+     * Logout
      *
      * @return
      */

@@ -97,7 +97,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     /**
-     * 分页查询
+     * Paginated query
      * @param employeePageQueryDTO
      * @return
      */

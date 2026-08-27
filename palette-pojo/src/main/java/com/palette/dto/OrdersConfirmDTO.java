@@ -8,7 +8,7 @@ import java.io.Serializable;
 public class OrdersConfirmDTO implements Serializable {
 
     private Long id;
-    //订单状态 1待付款 2待接单 3 已接单 4 派送中 5 已完成 6 已取消 7 退款
+    //order status: 1 pending payment, 2 pending confirmation, 3 confirmed, 4 out for delivery, 5 completed, 6 cancelled, 7 refunded
     private Integer status;
 
 }

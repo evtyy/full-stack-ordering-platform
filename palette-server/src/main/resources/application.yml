@@ -17,11 +17,11 @@ spring:
     port: ${palette.redis.port}
 
 mybatis:
-  #mapper配置文件
+  #mapper config files
   mapper-locations: classpath:mapper/*.xml
   type-aliases-package: com.palette.entity
   configuration:
-    #开启驼峰命名
+    #enable camel case mapping
     map-underscore-to-camel-case: true
 
 logging:
@@ -34,13 +34,13 @@ logging:
 
 palette:
   jwt:
-    # 设置jwt签名加密时使用的秘钥
+    # secret key used when signing/encrypting the jwt
     admin-secret-key: itcast
-    # 设置jwt过期时间
+    # jwt expiration time
     admin-ttl: 7200000
-    # 设置前端传递过来的令牌名称
+    # name of the token passed in from the frontend
     admin-token-name: token
-    # 设置用户的
+    # user jwt configuration
     user-secret-key: itcast
     user-ttl: 7200000
     user-token-name: authentication

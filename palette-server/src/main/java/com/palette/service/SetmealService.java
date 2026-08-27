@@ -12,14 +12,14 @@ import java.util.List;
 public interface SetmealService {
 
     /**
-     * 新增套餐，同时需要保存套餐和菜品的关联关系
+     * Add a new combo meal, and also save the association between the combo meal and its dishes
      *
      * @param setmealDTO
      */
     void saveWithDish(SetmealDTO setmealDTO);
 
     /**
-     * 分页查询
+     * Paginated query
      *
      * @param setmealPageQueryDTO
      * @return
@@ -27,14 +27,14 @@ public interface SetmealService {
     PageResult pageQuery(SetmealPageQueryDTO setmealPageQueryDTO);
 
     /**
-     * 批量删除套餐
+     * Batch delete combo meals
      *
      * @param ids
      */
     void deleteBatch(List<Long> ids);
 
     /**
-     * 根据id查询套餐和关联的菜品数据
+     * Query a combo meal and its associated dish data by id
      *
      * @param id
      * @return
@@ -42,14 +42,14 @@ public interface SetmealService {
     SetmealVO getByIdWithDish(Long id);
 
     /**
-     * 修改套餐
+     * Update combo meal
      *
      * @param setmealDTO
      */
     void update(SetmealDTO setmealDTO);
 
     /**
-     * 套餐起售、停售
+     * Enable/disable sale of a combo meal
      *
      * @param status
      * @param id
@@ -57,14 +57,14 @@ public interface SetmealService {
     void startOrStop(Integer status, Long id);
 
     /**
-     * 条件查询
+     * Conditional query
      * @param setmeal
      * @return
      */
     List<Setmeal> list(Setmeal setmeal);
 
     /**
-     * 根据id查询菜品选项
+     * Query dish options by id
      * @param id
      * @return
      */

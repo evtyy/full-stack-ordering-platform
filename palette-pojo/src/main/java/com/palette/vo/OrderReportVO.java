@@ -13,22 +13,22 @@ import java.io.Serializable;
 @AllArgsConstructor
 public class OrderReportVO implements Serializable {
 
-    //日期，以逗号分隔，例如：2022-10-01,2022-10-02,2022-10-03
+    //dates, comma-separated, e.g. 2022-10-01,2022-10-02,2022-10-03
     private String dateList;
 
-    //每日订单数，以逗号分隔，例如：260,210,215
+    //daily order counts, comma-separated, e.g. 260,210,215
     private String orderCountList;
 
-    //每日有效订单数，以逗号分隔，例如：20,21,10
+    //daily valid order counts, comma-separated, e.g. 20,21,10
     private String validOrderCountList;
 
-    //订单总数
+    //total order count
     private Integer totalOrderCount;
 
-    //有效订单数
+    //valid order count
     private Integer validOrderCount;
 
-    //订单完成率
+    //order completion rate
     private Double orderCompletionRate;
 
 }

@@ -17,7 +17,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/admin/setmeal")
-@Api(tags = "套餐相关接口")
+@Api(tags = "Combo meal related interfaces")
 @Slf4j
 public class SetmealController {
 
@@ -25,7 +25,7 @@ public class SetmealController {
     private SetmealService setmealService;
 
     /**
-     * 新增套餐
+     * Add a new combo meal
      *
      * @param setmealDTO
      * @return
@@ -33,80 +33,80 @@ public class SetmealController {
     @PostMapping
     @CacheEvict(cacheNames = "setmealCache", key = "#setmealDTO.categoryId")
     public Result<String> save(@RequestBody SetmealDTO setmealDTO) {
-        log.info("新增套餐：{}", setmealDTO);
+        log.info("New combo meal: {}", setmealDTO);
         setmealService.saveWithDish(setmealDTO);
         return Result.success();
     }
 
     /**
-     * 分页查询
+     * Paginated query
      *
      * @param setmealPageQueryDTO
      * @return
      */
     @GetMapping("/page")
     public Result<PageResult> page(SetmealPageQueryDTO setmealPageQueryDTO) {
-        log.info("分页查询套餐列表，请求参数：{}", setmealPageQueryDTO);
+        log.info("Paginated query of combo meal list, request params: {}", setmealPageQueryDTO);
         PageResult pageResult = setmealService.pageQuery(setmealPageQueryDTO);
         return Result.success(pageResult);
     }
 
     /**
-     * 删除套餐
+     * Delete combo meal
      *
      * @param ids
      * @return
      */
     @DeleteMapping
-    @ApiOperation("批量删除套餐")
+    @ApiOperation("Batch delete combo meals")
     @CacheEvict(cacheNames = "setmealCache", allEntries = true)
     public Result<String> delete(@RequestParam List<Long> ids) {
-        log.info("删除套餐，ids：{}", ids);
+        log.info("Delete combo meals, ids: {}", ids);
         setmealService.deleteBatch(ids);
         return Result.success();
     }
 
     /**
-     * 根据id查询套餐
+     * Query combo meal by id
      *
      * @param id
      * @return
      */
     @GetMapping("/{id}")
-    @ApiOperation("根据id查询套餐")
+    @ApiOperation("Query combo meal by id")
     public Result<SetmealVO> getById(@PathVariable Long id) {
-        log.info("根据id查询套餐，id：{}", id);
+        log.info("Query combo meal by id, id: {}", id);
         SetmealVO setmealVO = setmealService.getById(id);
         return Result.success(setmealVO);
     }
 
     /**
-     * 修改套餐
+     * Update combo meal
      *
      * @param setmealDTO
      * @return
      */
     @PutMapping
-    @ApiOperation("修改套餐")
+    @ApiOperation("Update combo meal")
     @CacheEvict(cacheNames = "setmealCache", allEntries = true)
     public Result<String> update(@RequestBody SetmealDTO setmealDTO) {
-        log.info("修改套餐，请求参数：{}", setmealDTO);
+        log.info("Update combo meal, request params: {}", setmealDTO);
         setmealService.update(setmealDTO);
         return Result.success();
     }
 
     /**
-     * 启用或停用套餐
+     * Enable or disable combo meal
      *
      * @param status
      * @param id
      * @return
      */
     @PostMapping("/status/{status}")
-    @ApiOperation("启用或停用套餐")
+    @ApiOperation("Enable or disable combo meal")
     @CacheEvict(cacheNames = "setmealCache", allEntries = true)
     public Result<String> startOrStop(@PathVariable Integer status, Long id) {
-        log.info("启用或停用套餐，status：{}，id：{}", status, id);
+        log.info("Enable or disable combo meal, status: {}, id: {}", status, id);
         setmealService.startOrStop(status, id);
         return Result.success();
     }

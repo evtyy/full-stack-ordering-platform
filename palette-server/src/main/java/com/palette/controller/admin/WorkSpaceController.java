@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 /**
- * 工作台
+ * Workspace
  */
 @RestController
 @RequestMapping("/admin/workspace")
@@ -24,15 +24,15 @@ public class WorkSpaceController {
     private WorkspaceService workspaceService;
 
     /**
-     * 工作台今日数据查询
+     * Query today's workspace data
      *
      * @return
      */
     @GetMapping("/businessData")
     public Result<BusinessDataVO> businessData() {
-        // 获得当天的开始时间
+        // Get the start time of today
         LocalDateTime begin = LocalDateTime.now().with(LocalTime.MIN);
-        // 获得当天的结束时间
+        // Get the end time of today
         LocalDateTime end = LocalDateTime.now().with(LocalTime.MAX);
 
         BusinessDataVO businessDataVO = workspaceService.getBusinessData(begin, end);
@@ -40,7 +40,7 @@ public class WorkSpaceController {
     }
 
     /**
-     * 查询订单管理数据
+     * Query order management data
      *
      * @return
      */
@@ -50,7 +50,7 @@ public class WorkSpaceController {
     }
 
     /**
-     * 查询菜品总览
+     * Query dish overview
      *
      * @return
      */
@@ -60,7 +60,7 @@ public class WorkSpaceController {
     }
 
     /**
-     * 查询套餐总览
+     * Query combo meal overview
      *
      * @return
      */

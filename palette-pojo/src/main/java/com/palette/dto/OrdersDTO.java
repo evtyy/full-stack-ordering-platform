@@ -13,43 +13,43 @@ public class OrdersDTO implements Serializable {
 
     private Long id;
 
-    //订单号
+    //order number
     private String number;
 
-    //订单状态 1待付款，2待派送，3已派送，4已完成，5已取消
+    //order status: 1 pending payment, 2 pending delivery, 3 out for delivery, 4 completed, 5 cancelled
     private Integer status;
 
-    //下单用户id
+    //id of the user who placed the order
     private Long userId;
 
-    //地址id
+    //address id
     private Long addressBookId;
 
-    //下单时间
+    //order time
     private LocalDateTime orderTime;
 
-    //结账时间
+    //checkout time
     private LocalDateTime checkoutTime;
 
-    //支付方式（当前未使用，仅通过 Stripe 支付）
+    //payment method (currently unused, payment is only made via Stripe)
     private Integer payMethod;
 
-    //实收金额
+    //amount actually received
     private BigDecimal amount;
 
-    //备注
+    //remark
     private String remark;
 
-    //用户名
+    //username
     private String userName;
 
-    //手机号
+    //phone number
     private String phone;
 
-    //地址
+    //address
     private String address;
 
-    //收货人
+    //consignee
     private String consignee;
 
     private List<OrderDetail> orderDetails;

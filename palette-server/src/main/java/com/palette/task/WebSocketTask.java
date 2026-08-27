@@ -11,10 +11,10 @@ public class WebSocketTask {
     private WebSocketServer webSocketServer;
 
     /**
-     * 通过WebSocket每隔5秒向客户端发送消息
+     * Send a message to the client via WebSocket every 5 seconds
      */
     @Scheduled(cron = "0/5 * * * * ?")
     public void sendMessageToClient() {
-        // webSocketServer.sendToAllClient("这是来自服务端的消息：" + DateTimeFormatter.ofPattern("HH:mm:ss").format(LocalDateTime.now()));
+        // webSocketServer.sendToAllClient("This is a message from the server: " + DateTimeFormatter.ofPattern("HH:mm:ss").format(LocalDateTime.now()));
     }
 }

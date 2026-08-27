@@ -26,7 +26,7 @@ public class OrderController {
     private OrderService orderService;
 
     /**
-     * 订单搜索
+     * Order search
      *
      * @param ordersPageQueryDTO
      * @return
@@ -38,7 +38,7 @@ public class OrderController {
     }
 
     /**
-     * 各个状态的订单数量统计
+     * Count of orders by status
      *
      * @return
      */
@@ -49,7 +49,7 @@ public class OrderController {
     }
 
     /**
-     * 订单详情
+     * Order details
      *
      * @param id
      * @return
@@ -61,7 +61,7 @@ public class OrderController {
     }
 
     /**
-     * 接单
+     * Accept order
      *
      * @return
      */
@@ -72,7 +72,7 @@ public class OrderController {
     }
 
     /**
-     * 拒单
+     * Reject order
      *
      * @return
      */
@@ -83,7 +83,7 @@ public class OrderController {
     }
 
     /**
-     * 取消订单
+     * Cancel order
      *
      * @return
      */
@@ -94,7 +94,7 @@ public class OrderController {
     }
 
     /**
-     * 派送订单
+     * Deliver order
      *
      * @return
      */
@@ -105,7 +105,7 @@ public class OrderController {
     }
 
     /**
-     * 完成订单
+     * Complete order
      *
      * @return
      */

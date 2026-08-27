@@ -31,12 +31,12 @@ public class ReportController {
     public Result<TurnoverReportVO> turnoverStatistics(
             @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate begin,
             @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate end) {
-        log.info("营业额统计：begin={}, end={}", begin, end);
+        log.info("Turnover statistics: begin={}, end={}", begin, end);
         return Result.success(reportService.getTurnoverReport(begin, end));
     }
 
     /**
-     * 用户数据统计
+     * User data statistics
      *
      * @param begin
      * @param end
@@ -51,7 +51,7 @@ public class ReportController {
     }
 
     /**
-     * 订单数据统计
+     * Order data statistics
      *
      * @param begin
      * @param end
@@ -66,7 +66,7 @@ public class ReportController {
     }
 
     /**
-     * 销量排名统计
+     * Sales ranking statistics
      *
      * @param begin
      * @param end
@@ -80,7 +80,7 @@ public class ReportController {
     }
 
     /**
-     * 导出运营报表
+     * Export operations report
      *
      * @param resp
      */

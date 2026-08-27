@@ -18,17 +18,17 @@ public class OrderTask {
     private OrderMapper orderMapper;
 
     /**
-     * 处理超时订单的方法
+     * Method to handle timed-out orders
      */
-    @Scheduled(cron = "0 * * * * ? ")   // 每分钟触发一次
+    @Scheduled(cron = "0 * * * * ? ")   // Triggered every minute
     public void processTimeoutOrders() {
-        log.info("处理超时订单");
-        // 获取超时订单 当前时间 - 15
+        log.info("Processing timed-out orders");
+        // Get timed-out orders: current time - 15 minutes
         List<Orders> orderList = orderMapper.getByStatusAndOrderTimeLT(Orders.PENDING_PAYMENT, LocalDateTime.now().plusMinutes(-15));
         if (orderList != null && !orderList.isEmpty()) {
             orderList.forEach(order -> {
                 order.setStatus(Orders.CANCELLED);
-                order.setCancelReason("订单超时，自动取消");
+                order.setCancelReason("Order timed out, automatically cancelled");
                 order.setCancelTime(LocalDateTime.now());
                 orderMapper.update(order);
             });
@@ -36,12 +36,12 @@ public class OrderTask {
     }
 
     /**
-     * 处理一直处于派送中的
+     * Handle orders stuck in delivery
      */
-    @Scheduled(cron = "0 0 1 * * ? ")   // 每天凌晨一点触发
+    @Scheduled(cron = "0 0 1 * * ? ")   // Triggered at 1am every day
     public void processDeliveryOrders() {
-        log.info("处理派送中的订单");
-        // 获取派送中的订单
+        log.info("Processing orders in delivery");
+        // Get orders that are out for delivery
         LocalDateTime time = LocalDateTime.now().plusMinutes(-60);
         List<Orders> orderList = orderMapper.getByStatusAndOrderTimeLT(Orders.DELIVERY_IN_PROGRESS, time);
         if (orderList != null && !orderList.isEmpty()) {

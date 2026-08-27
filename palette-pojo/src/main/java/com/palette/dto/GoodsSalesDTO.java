@@ -12,9 +12,9 @@ import java.io.Serializable;
 @NoArgsConstructor
 @Builder
 public class GoodsSalesDTO implements Serializable {
-    //商品名称
+    //item name
     private String name;
 
-    //销量
+    //sales volume
     private Integer number;
 }

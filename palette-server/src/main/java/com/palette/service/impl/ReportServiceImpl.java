@@ -46,7 +46,7 @@ public class ReportServiceImpl implements ReportService {
     private WorkspaceService workspaceService;
 
     /**
-     * 营业额统计
+     * Turnover statistics
      *
      * @param begin
      * @param end
@@ -82,7 +82,7 @@ public class ReportServiceImpl implements ReportService {
     }
 
     /**
-     * 根据时间区间统计用户数量
+     * Count users within a time range
      *
      * @param begin
      * @param end
@@ -97,15 +97,15 @@ public class ReportServiceImpl implements ReportService {
             begin = begin.plusDays(1);
             dateList.add(begin);
         }
-        List<Integer> newUserList = new ArrayList<>(); // 新增用户数
-        List<Integer> totalUserList = new ArrayList<>(); // 总用户数
+        List<Integer> newUserList = new ArrayList<>(); // Number of new users
+        List<Integer> totalUserList = new ArrayList<>(); // Total number of users
 
         for (LocalDate date : dateList) {
             LocalDateTime beginTime = LocalDateTime.of(date, LocalTime.MIN);
             LocalDateTime endTime = LocalDateTime.of(date, LocalTime.MAX);
-            // 新增用户数量 select count(id) from user where create_time > ? and create_time < ?
+            // Number of new users: select count(id) from user where create_time > ? and create_time < ?
             Integer newUser = getUserCount(beginTime, endTime);
-            // 总用户数量 select count(id) from user where create_time < ?
+            // Total number of users: select count(id) from user where create_time < ?
             Integer totalUser = getUserCount(null, endTime);
 
             newUserList.add(newUser);
@@ -120,7 +120,7 @@ public class ReportServiceImpl implements ReportService {
     }
 
     /**
-     * 根据时间区间统计订单数量
+     * Count orders within a time range
      *
      * @param begin
      * @param end
@@ -134,18 +134,18 @@ public class ReportServiceImpl implements ReportService {
             begin = begin.plusDays(1);
             dateList.add(begin);
         }
-        // 每天订单总数集合
+        // Collection of total order counts per day
         List<Integer> orderCountList = new ArrayList<>();
-        // 每天有效订单数集合
+        // Collection of valid order counts per day
         List<Integer> validOrderCountList = new ArrayList<>();
         for (LocalDate date : dateList) {
             LocalDateTime beginTime = LocalDateTime.of(date, LocalTime.MIN);
             LocalDateTime endTime = LocalDateTime.of(date, LocalTime.MAX);
-            // 查询每天的总订单数 select count(id) from orders where order_time > ? and order_time <
+            // Query the total number of orders per day: select count(id) from orders where order_time > ? and order_time <
             // ?
             Integer orderCount = getOrderCount(beginTime, endTime, null);
 
-            // 查询每天的有效订单数 select count(id) from orders where order_time > ? and order_time <
+            // Query the number of valid orders per day: select count(id) from orders where order_time > ? and order_time <
             // ? and status = ?
             Integer validOrderCount = getOrderCount(beginTime, endTime, Orders.COMPLETED);
 
@@ -153,11 +153,11 @@ public class ReportServiceImpl implements ReportService {
             validOrderCountList.add(validOrderCount);
         }
 
-        // 时间区间内的总订单数
+        // Total number of orders within the time range
         Integer totalOrderCount = orderCountList.stream().reduce((a, b) -> a + b).get();
-        // 时间区间内的总有效订单数
+        // Total number of valid orders within the time range
         Integer validOrderCount = validOrderCountList.stream().reduce((a, b) -> a + b).get();
-        // 订单完成率
+        // Order completion rate
         Double orderCompletionRate = 0.0;
         if (totalOrderCount != 0) {
             orderCompletionRate = validOrderCount.doubleValue() / totalOrderCount;
@@ -174,7 +174,7 @@ public class ReportServiceImpl implements ReportService {
     }
 
     /**
-     * 查询指定时间区间内的销量排名top10
+     * Query the top 10 sales rankings within a specified time range
      *
      * @param begin
      * @param end
@@ -197,7 +197,7 @@ public class ReportServiceImpl implements ReportService {
     }
 
     /**
-     * 根据时间区间统计用户数量
+     * Count users within a time range
      *
      * @param beginTime
      * @param endTime
@@ -211,7 +211,7 @@ public class ReportServiceImpl implements ReportService {
     }
 
     /**
-     * 根据时间区间统计指定状态的订单数量
+     * Count orders with a specified status within a time range
      *
      * @param beginTime
      * @param endTime
@@ -227,38 +227,38 @@ public class ReportServiceImpl implements ReportService {
     }
 
     /**
-     * 导出excel
+     * Export excel
      *
      * @param resp
      */
     @Override
     public void exportExcel(HttpServletResponse resp) {
-        // 查数据
+        // Query the data
         LocalDate begin = LocalDate.now().minusDays(30);
         LocalDate end = LocalDate.now().minusDays(1);
-        // 概览书
+        // Overview data
         BusinessDataVO businessDataVO = workspaceService.getBusinessData(LocalDateTime.of(begin, LocalTime.MIN),
                 LocalDateTime.of(end, LocalTime.MAX));
 
-        // 写入excel
-        InputStream in = this.getClass().getClassLoader().getResourceAsStream("templates/运营数据报表模板.xlsx");
+        // Write to excel
+        InputStream in = this.getClass().getClassLoader().getResourceAsStream("templates/operating_data_report_template.xlsx");
         try {
             XSSFWorkbook excel = new XSSFWorkbook(in);
-            // 写入时间
+            // Write the time range
             XSSFSheet sheet = excel.getSheetAt(0);
-            sheet.getRow(1).getCell(1).setCellValue("时间: " + begin + " ~ " + end);
+            sheet.getRow(1).getCell(1).setCellValue("Time: " + begin + " ~ " + end);
 
-            // 写入概览数据
+            // Write the overview data
             sheet.getRow(3).getCell(2).setCellValue(businessDataVO.getTurnover());
             sheet.getRow(3).getCell(4).setCellValue(businessDataVO.getOrderCompletionRate());
             sheet.getRow(3).getCell(6).setCellValue(businessDataVO.getNewUsers());
             sheet.getRow(4).getCell(2).setCellValue(businessDataVO.getValidOrderCount());
             sheet.getRow(4).getCell(4).setCellValue(businessDataVO.getUnitPrice());
 
-            // 填充明细数据
+            // Fill in the detailed data
             for (int i = 0; i < 30; i++) {
                 LocalDate date = begin.plusDays(i);
-                // 查询每天的概览数据
+                // Query the overview data for each day
                 BusinessDataVO businessData = workspaceService.getBusinessData(LocalDateTime.of(date, LocalTime.MIN),
                         LocalDateTime.of(date, LocalTime.MAX));
                 XSSFRow row = sheet.getRow(i + 7);
@@ -270,7 +270,7 @@ public class ReportServiceImpl implements ReportService {
                 row.getCell(6).setCellValue(businessData.getNewUsers());
             }
 
-            // 输出流下载文件
+            // Output stream to download the file
             ServletOutputStream out = resp.getOutputStream();
             excel.write(out);
 

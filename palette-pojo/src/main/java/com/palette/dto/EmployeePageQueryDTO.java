@@ -7,13 +7,13 @@ import java.io.Serializable;
 @Data
 public class EmployeePageQueryDTO implements Serializable {
 
-    //员工姓名
+    //employee name
     private String name;
 
-    //页码
+    //page number
     private int page;
 
-    //每页显示记录数
+    //number of records displayed per page
     private int pageSize;
 
 }

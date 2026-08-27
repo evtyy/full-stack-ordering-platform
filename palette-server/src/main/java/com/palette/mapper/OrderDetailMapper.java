@@ -9,13 +9,13 @@ import java.util.List;
 @Mapper
 public interface OrderDetailMapper {
     /**
-     * 批量插入订单明细数据
+     * Batch insert order detail data
      * @param orderDetailList
      */
     void insertBatch(List<OrderDetail> orderDetailList);
 
     /**
-     * 根据订单id查询订单明细
+     * Query order details by order id
      * @param orderId
      * @return
      */

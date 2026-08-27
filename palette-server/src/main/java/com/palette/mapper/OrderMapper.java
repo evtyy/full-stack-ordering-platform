@@ -15,13 +15,13 @@ import java.util.Map;
 public interface OrderMapper {
 
     /**
-     * 插入订单数据
+     * Insert order data
      * @param orders
      */
     void insert(Orders orders);
 
     /**
-     * 根据订单号和用户id查询订单
+     * Query order by order number and user id
      * @param orderNumber
      * @param userId
      */
@@ -29,33 +29,33 @@ public interface OrderMapper {
     Orders getByNumberAndUserId(String orderNumber, Long userId);
 
     /**
-     * 修改订单信息
+     * Update order information
      * @param orders
      */
     void update(Orders orders);
 
     /**
-     * 分页条件查询并按下单时间排序
+     * Paginated conditional query sorted by order time
      * @param ordersPageQueryDTO
      */
     Page<Orders> pageQuery(OrdersPageQueryDTO ordersPageQueryDTO);
 
     /**
-     * 根据id查询订单
+     * Query order by id
      * @param id
      */
     @Select("select * from orders where id=#{id}")
     Orders getById(Long id);
 
     /**
-     * 根据状态统计订单数量
+     * Count orders by status
      * @param status
      */
     @Select("select count(id) from orders where status = #{status}")
     Integer countStatus(Integer status);
 
     /**
-     * 根据订单状态和下单时间查询订单
+     * Query orders by order status and order time
      * @param status
      * @param orderTime
      * @return
@@ -64,21 +64,21 @@ public interface OrderMapper {
     List<Orders> getByStatusAndOrderTimeLT(Integer status, LocalDateTime orderTime);
 
     /**
-     * 根据动态条件统计营业额数据
+     * Aggregate turnover data based on dynamic conditions
      * @param map
      * @return
      */
     Double sumByMap(Map map);
 
     /**
-     * 根据动态条件统计订单数量
+     * Count orders based on dynamic conditions
      * @param map
      * @return
      */
     Integer countByMap(Map map);
 
     /**
-     * 统计指定时间区间内的销量排名前10
+     * Get the top 10 sales rankings within a specified time range
      * @param begin
      * @param end
      * @return
@@ -86,7 +86,7 @@ public interface OrderMapper {
     List<GoodsSalesDTO> getSalesTop10(LocalDateTime begin,LocalDateTime end);
 
     /**
-     * 根据订单号查询订单
+     * Query order by order number
      *
      * @param orderNumber
      */
