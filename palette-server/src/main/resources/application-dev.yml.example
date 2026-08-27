@@ -1,0 +1,20 @@
+palette:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    host: localhost
+    port: 3306
+    database: palette
+    username: your-db-username
+    password: your-db-password
+  alioss:
+    endpoint: your-oss-endpoint
+    access-key-id: your-oss-access-key-id
+    access-key-secret: your-oss-access-key-secret
+    bucket-name: your-oss-bucket-name
+  redis:
+    host: localhost
+    port: 6379
+  stripe:
+    secret-key: 'sk_test_your-stripe-test-secret-key'
+    success-url: 'http://localhost:5173/order/confirm?session_id={CHECKOUT_SESSION_ID}'
+    cancel-url: 'http://localhost:5173/checkout'

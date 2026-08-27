@@ -1,0 +1,57 @@
+server:
+  port: 8080
+
+spring:
+  profiles:
+    active: dev
+  main:
+    allow-circular-references: true
+  datasource:
+    druid:
+      driver-class-name: ${palette.datasource.driver-class-name}
+      url: jdbc:mysql://${palette.datasource.host}:${palette.datasource.port}/${palette.datasource.database}?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&useSSL=false&allowPublicKeyRetrieval=true
+      username: ${palette.datasource.username}
+      password: ${palette.datasource.password}
+  redis:
+    host: ${palette.redis.host}
+    port: ${palette.redis.port}
+
+mybatis:
+  #mapper配置文件
+  mapper-locations: classpath:mapper/*.xml
+  type-aliases-package: com.palette.entity
+  configuration:
+    #开启驼峰命名
+    map-underscore-to-camel-case: true
+
+logging:
+  level:
+    com:
+      palette:
+        mapper: debug
+        service: info
+        controller: info
+
+palette:
+  jwt:
+    # 设置jwt签名加密时使用的秘钥
+    admin-secret-key: itcast
+    # 设置jwt过期时间
+    admin-ttl: 7200000
+    # 设置前端传递过来的令牌名称
+    admin-token-name: token
+    # 设置用户的
+    user-secret-key: itcast
+    user-ttl: 7200000
+    user-token-name: authentication
+  alioss:
+    endpoint: ${palette.alioss.endpoint}
+    access-key: ${palette.alioss.access-key}
+    secret-key: ${palette.alioss.secret-key}
+    bucket-name: ${palette.alioss.bucket-name}
+  stripe:
+    secret-key: ${palette.stripe.secret-key}
+    success-url: ${palette.stripe.success-url}
+    cancel-url: ${palette.stripe.cancel-url}
+
+

@@ -1,26 +1,35 @@
-# 苍穹外卖 Sky-Take-Out
+# Palette
 
-## 技术栈
+Online ordering system for Palette, a kitchen and juice bar.
 
-SpringBoot+Mysql+Vue3+WebSocket+Redis+ElementUI
+## Tech Stack
 
-## 环境搭建
+SpringBoot + MySQL + Vue3 + WebSocket + Redis + ElementUI
 
-- **前端**
-  - Web文件夹下运行nginx.exe文件
-- 后端
-  - 更改sky-server里面的application-dev.yml文件内容
-  - 首次构建前，注册一次 JDK 11 的 Maven toolchain（`mvn` 需要它才能正确编译，尤其是本机默认 JDK 版本不是 11 的情况下）：
+## Getting Started
+
+- **Customer Frontend**
+  - See `customer-web`'s README
+- **Admin Frontend**
+  - See `deploy/README.md` — it's a pre-built static app, served via nginx (or any static server) proxying to the backend
+- **Backend**
+  - Copy `palette-server/src/main/resources/application-dev.yml.example` to `application-dev.yml` in the same folder and fill in your own database, OSS, and Stripe credentials (this file is gitignored)
+  - Before the first build, register a JDK 11 Maven toolchain once (`mvn` needs it to compile correctly, especially if your machine's default JDK isn't 11):
     - macOS / Linux: `./scripts/setup-toolchain.sh`
     - Windows: `powershell -ExecutionPolicy Bypass -File scripts\setup-toolchain.ps1`
-- 数据库
-  - 运行sky_take_out.sql
+- **Database**
+  - Run `palette.sql`
 
-## 项目截图
+## Screenshots
 
-- ![image-20240426195901149](./image/image-20240426195901149.png)
+### Customer Web (customer-web)
 
-- ![image-20240426195929170](./image/image-20240426195929170.png)
-- ![image-20240426195959737](./image/image-20240426195959737.png)
-- ![image-20240426200014740](./image/image-20240426200014740.png)
-- ![image-20240426200102763](./image/image-20240426200102763.png)
+- ![Customer menu page](./image/customer-page.png)
+- ![Dish customization](./image/customer-customization.png)
+- ![Shopping cart checkout](./image/shopping-cart.png)
+
+### Admin Backend
+
+- ![Dish management](./image/dish-management.png)
+- ![Category management](./image/category-management.png)
+- ![Combo management](./image/combo-management.png)

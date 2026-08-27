@@ -5,3 +5,6 @@
 *Test.java
 **/test/
 application-dev.yml.DS_Store
+**/application-dev.yml
+.DS_Store
+Icon?
